@@ -175,6 +175,33 @@ canvas#spark{width:100%;height:90px;background:#12291f;border-radius:8px;display
 
 @media (prefers-reduced-motion:reduce){.spot.betable .ring{animation:none;} #big div{animation:none;}}
 
+/* squeeze styles */
+.sqcard{flex:none;border-radius:12px;position:relative;overflow:hidden;touch-action:none;cursor:grab;box-shadow:0 10px 30px rgba(0,0,0,.6);background:#fbf8f1;transition:box-shadow .15s;}
+#sq .sqdrama{min-height:18px;font-size:14px;font-weight:700;color:#fff;letter-spacing:.04em;text-shadow:0 0 10px rgba(231,200,121,.9);}
+#sq.flash{animation:sqflash .6s ease-out;}
+@keyframes sqflash{0%{background:rgba(255,236,170,.55)}100%{background:rgba(2,12,8,.78)}}
+.sqcall{position:absolute;left:0;right:0;top:44%;text-align:center;font-family:var(--f-body);font-weight:700;font-size:36px;letter-spacing:.04em;color:#fff3c4;text-shadow:0 0 18px rgba(231,200,121,1),0 2px 4px #000;pointer-events:none;animation:sqcall .9s cubic-bezier(.2,1.6,.4,1) both;}
+.sqcall.miss{font-size:24px;color:#cfd8d3;text-shadow:0 2px 4px #000;animation:none;}
+@keyframes sqcall{from{transform:scale(.2);opacity:0}}
+#sqpill{position:absolute;left:10px;top:570px;z-index:9;height:22px;padding:0 10px;border-radius:11px;font-size:11px;font-weight:700;background:rgba(4,20,14,.75);border:1px solid rgba(231,200,121,.55);color:var(--gold);}
+#sqmenu{position:absolute;left:10px;top:262px;width:236px;z-index:24;background:#120a06;border:1px solid #7a4a2e;border-radius:12px;padding:6px;display:flex;flex-direction:column;gap:3px;box-shadow:0 12px 30px rgba(0,0,0,.6);}
+#sqmenu button{display:flex;flex-direction:column;align-items:flex-start;padding:6px 10px;border-radius:8px;background:#1b0f0a;text-align:left;}
+#sqmenu button b{font-size:13px;color:var(--ivory);} #sqmenu button small{font-size:10.5px;color:#9fb9ad;}
+#sqmenu button.on{background:#3a2a10;box-shadow:inset 0 0 0 1px var(--gold);}
+.opt select{max-width:150px;}
+/* tutorial */
+#coach{position:absolute;left:150px;right:8px;top:244px;z-index:26;padding:10px 12px;border-radius:12px;background:rgba(10,22,17,.96);border:1px solid var(--gold);box-shadow:0 10px 28px rgba(0,0,0,.6);font-size:12px;line-height:1.6;}
+#coach.low{top:auto;bottom:8px;left:8px;right:8px;}
+#coach.low .ct{max-height:84px;}
+#coach h6{margin:0 0 4px;font-size:10px;letter-spacing:.08em;color:var(--gold);font-weight:700;}
+#coach .ct{max-height:104px;overflow-y:auto;}
+#coach .btns{margin-top:8px;} #coach .b{height:30px;font-size:12px;}
+#coach.nudge{animation:nudge .35s;}
+@keyframes nudge{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.tutfocus{outline:2px solid var(--gold);outline-offset:3px;animation:tutpulse 1.1s ease-in-out infinite;border-radius:10px;}
+@keyframes tutpulse{50%{outline-color:rgba(231,200,121,.25)}}
+.lnk{margin-left:6px;padding:1px 8px;border-radius:9px;border:1px solid var(--gold);background:rgba(4,20,14,.6);color:var(--gold);font-size:11px;font-weight:700;}
+
 </style>
 </head>
 <body>
@@ -234,6 +261,9 @@ canvas#spark{width:100%;height:90px;background:#12291f;border-radius:8px;display
   <div id="playerName"></div>
   <div class="row" id="playerRow"></div>
   <div id="msg"></div>
+  <button id="sqpill" aria-label="絞り方を選ぶ"></button>
+  <div id="sqmenu" hidden></div>
+  <div id="coach" hidden></div>
 
   <div id="panel"></div>
   <div id="fx"></div>
@@ -243,8 +273,12 @@ canvas#spark{width:100%;height:90px;background:#12291f;border-radius:8px;display
   <section class="sheet" id="sheetSet" hidden aria-label="設定">
     <header><h2>SETTINGS</h2><button class="b" style="flex:none;width:80px;height:34px" data-close>閉じる</button></header>
     <div class="body">
+      <div><h5>遊び方</h5>
+        <div class="opt"><span>チュートリアル<em>仕組まれた4つのハンドでルールを体験。練習用チップなので残高は減りません</em></span><button class="b gold" style="flex:none;width:80px;height:34px" id="btnTut">はじめる</button></div>
+      </div>
       <div><h5>演出</h5>
-        <div class="opt"><span>絞り<em>カードを指でめくる。タップで一気に開く</em></span><div class="seg" data-key="sqz"><button data-v="1">ON</button><button data-v="0">OFF</button></div></div>
+        <div class="opt"><span>絞り<em>OFF なら自分の札を表向きで配る</em></span><div class="seg" data-key="sqz"><button data-v="1">ON</button><button data-v="0">OFF</button></div></div>
+        <div class="opt"><span>絞り方</span><select id="sqStyle"><option value="corner">コーナー</option><option value="side">サイド</option><option value="end">エンド</option><option value="scratch">スクラッチ</option><option value="slam">一気</option><option value="random">おまかせ</option></select></div>
         <div class="opt"><span>効果音</span><div class="seg" data-key="sfx"><button data-v="1">ON</button><button data-v="0">OFF</button></div></div>
         <div class="opt"><span>ディーラーの声<em>英語でコール（端末の読み上げ音声）</em></span><div class="seg" data-key="voice"><button data-v="1">ON</button><button data-v="0">OFF</button></div></div>
         <div class="opt"><span>声の種類<em>端末に入っている英語音声から選ぶ</em></span><span style="display:flex;gap:6px;flex:none"><select id="voiceSel"></select><button id="voiceTry" class="b" style="flex:none;width:56px;height:30px">試聴</button></span></div>
@@ -263,7 +297,7 @@ canvas#spark{width:100%;height:90px;background:#12291f;border-radius:8px;display
         <div class="opt"><span>フルハウス<em>₱</em></span><input id="jp-fh" inputmode="numeric"></div>
         <div class="opt"><span>フラッシュ<em>₱</em></span><input id="jp-flush" inputmode="numeric"></div>
         <div class="opt"><span>ストレート<em>₱</em></span><input id="jp-straight" inputmode="numeric"></div>
-        <p class="note">初期値は仮の配当表です（還元率およそ77%・当選およそ1/130）。実機の配当表に書き換えると、その値で払い出します。</p>
+        <p class="note">初期値は仮の配当表です（メーター ₱3,000,000 で還元率およそ72%・当選およそ1/132）。実機の配当表に書き換えると、その値で払い出します。</p>
       </div>
       <div><h5>チップ</h5>
         <div class="opt"><span>チップを買い足す</span><div class="seg" id="buyin"><button data-v="10000">₱10,000</button><button data-v="45000">₱45,000</button><button data-v="100000">₱100,000</button></div></div>
@@ -564,10 +598,10 @@ const cs=c=>c.rank+({s:'♠',h:'♥',d:'♦',c:'♣'})[c.suit];
 // ---------- persistence ----------
 const KEY='lunar_casino_v1';
 const DEF={balance:45000,buyins:45000,onTable:0,meter:2486350,
-  set:{sqz:1,sfx:1,voice:1,vname:'',amb:1,speed:1,akq:6,tmin:500,hint:0},
+  set:{sqz:1,sqs:'corner',sfx:1,voice:1,vname:'',amb:1,speed:1,akq:6,tmin:500,hint:0,tut:0},
   jpt:{rf:100,sf:10,quads:60000,fh:15000,flush:6000,straight:4000},
   last:{ante:500,super:500,jp:1},hist:[],series:[0],st:{hands:0,best:0,ok:0,n:0,jp:0}};
-let P;
+let P,TUT=null; // TUT: tutorial state (see tutorial section)
 function load(){
   let d=null;try{d=JSON.parse(localStorage.getItem(KEY)||'null');}catch(e){}
   P=JSON.parse(JSON.stringify(DEF));
@@ -576,7 +610,9 @@ function load(){
   }
   if(P.onTable>0){P.balance+=P.onTable;P.onTable=0;} // a hand interrupted by reload is voided
 }
-function save(){try{localStorage.setItem(KEY,JSON.stringify(P));}catch(e){}}
+function save(){try{
+  if(TUT){const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d){d.set=P.set;localStorage.setItem(KEY,JSON.stringify(d));}return;} // tutorial: keep only settings
+  localStorage.setItem(KEY,JSON.stringify(P));}catch(e){}}
 load();
 
 // ---------- scaling ----------
@@ -731,7 +767,9 @@ function addLine(label,amt){R.lines.push([label,amt]);}
 
 // ---------- panel ----------
 const ACT={};
-panelEl.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b||b.disabled||busy)return;ACT[b.dataset.act](b);});
+panelEl.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b||b.disabled||busy)return;if(TUT&&!tutAllows(b.dataset.act)){tutNudge();return;}
+  if(TUT&&b.dataset.act!=='pick'){const s=tutStep();if(s&&!s.next&&s.on===TUT.ev)TUT.i++;}
+  tutHide();ACT[b.dataset.act](b);});
 function btn(act,label,sub,cls,dis){return '<button class="b '+(cls||'')+'" data-act="'+act+'"'+(dis?' disabled':'')+'>'+label+(sub?'<small>'+sub+'</small>':'')+'</button>';}
 function setPanel(html){panelEl.innerHTML=html;}
 
@@ -754,10 +792,12 @@ function renderBetPanel(){
   const min=+P.set.tmin;
   if(P.balance<min*2&&empty)setMsg('チップが足りません。設定からチップを買い足せます');
   else setMsg('チップを選んで <b>ANTE</b> と <b>SUPER</b> をタップ（ミニマム '+peso(min)+'・SUPER は ANTE 以上）');
+  tutEvent('bet');
 }
 ACT.pick=b=>{chipSel=+b.dataset.v;SFX.chip();renderBetPanel();};
 function placeChip(k){
   if(R||busy)return;
+  if(TUT&&!tutAllows(k)){tutNudge();return;}
   if(P.balance<chipSel){setMsg('チップが足りません');return;}
   const from=pos(panelEl.querySelector('.tray .chip.sel')||panelEl);
   P.balance-=chipSel;bet[k]+=chipSel;renderBal();
@@ -768,7 +808,7 @@ SPOTS.super.addEventListener('click',()=>placeChip('super'));
 SPOTS.ante.addEventListener('click',()=>placeChip('ante'));
 [SPOTS.super,SPOTS.ante].forEach(s=>s.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();s.click();}}));
 $('jp').addEventListener('click',()=>{
-  if(R||busy)return;
+  if(R||busy||TUT)return;
   if(!bet.jp){if(P.balance<JP_BET){setMsg('チップが足りません');return;}P.balance-=JP_BET;bet.jp=1;fly(pos(panelEl),pos($('jp')),JP_BET,{max:1});}
   else{P.balance+=JP_BET;bet.jp=0;fly(pos($('jp')),balPt(),JP_BET,{max:1});}
   $('jp').classList.toggle('on',!!bet.jp);renderBal();renderBetPanel();persistTable();
@@ -793,7 +833,7 @@ ACT.double=()=>{
   renderBal();renderBetPanel();persistTable();
 };
 ACT.deal=()=>{
-  const min=+P.set.tmin;
+  const min=TUT?500:+P.set.tmin;
   if(bet.ante<min){setMsg('ANTE はミニマム '+peso(min)+' 以上が必要です');buzz(30);return;}
   if(bet.super<bet.ante){setMsg('SUPER は ANTE（'+peso(bet.ante)+'）以上が必要です');buzz(30);return;}
   startHand();
@@ -810,7 +850,7 @@ async function startHand(){
   busy=true;setPanel('');
   P.last={ante:bet.ante,super:bet.super,jp:bet.jp};
   SPOTS.super.classList.remove('betable');SPOTS.ante.classList.remove('betable');$('jp').classList.add('locked');
-  const deck=newDeck();
+  const deck=TUT?tutDeck():newDeck();
   R={deck,player:deck.splice(0,5),dealer:deck.splice(0,5),A:bet.ante,S:bet.super,jp:bet.jp,raise:0,lines:[],acts:[],notes:[],
      onTable:bet.ante+bet.super+(bet.jp?JP_BET:0),startBal:P.balance+bet.ante+bet.super+(bet.jp?JP_BET:0),jpOnTable:!!bet.jp};
   if(bet.jp)P.meter+=23;
@@ -819,22 +859,24 @@ async function startHand(){
   await clearTable();
   rowPad(dealerRow,5,56);rowPad(playerRow,5,54);
   for(let i=0;i<5;i++){
-    await dealCard(playerRow,R.player[i],54,76,false);await wait(60);
+    await dealCard(playerRow,R.player[i],54,76,!P.set.sqz);await wait(60);
     await dealCard(dealerRow,R.dealer[i],56,78,i===4);await wait(60);
   }
   setBubble('DEALER SHOWS '+cs(R.dealer[4]));
-  enterPeek();
+  if(P.set.sqz)enterPeek();else{await wait(350);R.phase='reveal';afterPeek();}
 }
 function enterPeek(){
   busy=false;R.phase='peek';
   const cards=[...playerRow.children];
   cards.forEach(el=>{if(el.classList.contains('up'))return;el.classList.add('tap');el.onclick=async()=>{if(busy||el.classList.contains('up'))return;
-    if(P.set.sqz){busy=true;await squeeze([el]);busy=false;}else flip(el);
+    if(TUT&&!tutAllows('peek')){tutNudge();return;}
+    busy=true;await squeeze([el]);busy=false;
     el.classList.remove('tap');el.onclick=null;checkPeek();};});
-  setMsg(P.set.sqz?'カードをタップすると1枚ずつ絞れます':'カードをタップしてめくってください');
-  setPanel('<div class="btns" style="margin-top:auto">'+btn('sqzToggle','絞り '+(P.set.sqz?'ON':'OFF'),'タップで切替')+btn('openall','全部めくる','','gold')+'</div>');
+  setMsg('カードをタップして1枚ずつ絞る。「順番に絞る」で5枚を続けて');
+  setPanel('<div class="btns" style="margin-top:auto">'+btn('sqseq','順番に絞る')+btn('openall','全部めくる','','gold')+'</div>');
+  tutEvent('peek');
 }
-ACT.sqzToggle=()=>{if(busy)return;P.set.sqz=P.set.sqz?0:1;save();enterPeek();};
+ACT.sqseq=async()=>{busy=true;setPanel('');const els=[...playerRow.children].filter(e=>!e.classList.contains('up'));els.forEach(e=>{e.onclick=null;e.classList.remove('tap');});await squeeze(els);busy=false;checkPeek();};
 ACT.openall=async()=>{busy=true;setPanel('');const els=[...playerRow.children].filter(e=>!e.classList.contains('up'));for(const e of els){e.onclick=null;e.classList.remove('tap');flip(e);await wait(110);}await wait(300);busy=false;checkPeek();};
 function checkPeek(){if(R.phase!=='peek')return;if([...playerRow.children].every(e=>e.classList.contains('up'))){R.phase='reveal';afterPeek();}}
 
@@ -878,6 +920,7 @@ function enterDecide(){
   setBubble('DEALER SHOWS '+cs(R.dealer[4]));
   setMsg(hintMsg(rec,'どうしますか？ PLAY は ANTE の2倍、BUY と EXCHANGE は1倍'));
   setPanel('<div class="btns g2">'+btn('fold','FOLD','','red '+recBtn('fold',rec))+btn('buy','BUY 6TH',peso(A),recBtn('buy',rec),P.balance<A)+btn('exch','EXCHANGE',peso(A),recBtn('exchange',rec),P.balance<A)+btn('play','PLAY',peso(2*A),'gold '+recBtn('play',rec),P.balance<2*A)+'</div>');
+  tutEvent('decide');
 }
 function logStrat(chosen,rec,what){P.st.n++;if(chosen===rec.action)P.st.ok++;else R.notes.push(what+'：おすすめは '+rec.label);}
 async function payFee(label){
@@ -905,12 +948,12 @@ ACT.buy=async()=>{
 };
 ACT.exch=()=>{
   logStrat('exchange',R.rec1,'最初の判断');R.acts.push('EXCHANGE');R.phase='exsel';R.sel=[];
-  [...playerRow.children].forEach((el,i)=>{el.classList.add('tap');el.onclick=()=>{if(busy)return;const k=R.sel.indexOf(i);if(k>=0)R.sel.splice(k,1);else R.sel.push(i);el.classList.toggle('sel');SFX.flip();renderExPanel();};});
+  [...playerRow.children].forEach((el,i)=>{el.classList.add('tap');el.onclick=()=>{if(busy)return;if(TUT&&!tutAllows('exsel')){tutNudge();return;}const k=R.sel.indexOf(i);if(k>=0)R.sel.splice(k,1);else R.sel.push(i);el.classList.toggle('sel');SFX.flip();renderExPanel();};});
   if(P.set.hint&&R.rec1.ex){const keep=R.player.filter((c,i)=>!R.rec1.ex.includes(i)).map(cs).join(' ');setMsg('<span class="hint">おすすめ：'+keep+' を残し、他の '+R.rec1.ex.length+' 枚を交換</span>');}
   else setMsg('交換するカードを 2〜5 枚タップ');
   renderExPanel();
 };
-function renderExPanel(){const n=R.sel.length;setPanel('<div class="btns" style="margin-top:auto">'+btn('exback','戻る')+btn('exgo','交換する',n+'枚 · '+peso(R.A),'gold',n<2||n>5||P.balance<R.A)+'</div>');}
+function renderExPanel(){const n=R.sel.length;setPanel('<div class="btns" style="margin-top:auto">'+btn('exback','戻る')+btn('exgo','交換する',n+'枚 · '+peso(R.A),'gold',n<2||n>5||P.balance<R.A)+'</div>');tutEvent('exsel');}
 ACT.exback=()=>{[...playerRow.children].forEach(el=>{el.classList.remove('tap','sel');el.onclick=null;});P.st.n--;if(R.rec1.action==='exchange')P.st.ok--;else R.notes.pop();R.acts.pop();enterDecide();};
 ACT.exgo=async()=>{
   busy=true;setPanel('');
@@ -937,6 +980,7 @@ function enterDecide2(){
   $('playerName').textContent=handLabel(evalHand(R.player))+(R.player.length===6?'（6枚中ベスト5）':'');
   setMsg(hintMsg(R.rec2,'PLAY（'+peso(2*R.A)+'）で勝負するか、FOLD するか'));
   setPanel('<div class="btns" style="margin-top:auto">'+btn('fold','FOLD','','red '+recBtn('fold',R.rec2))+btn('play','PLAY',peso(2*R.A),'gold '+recBtn('play',R.rec2),P.balance<2*R.A)+'</div>');
+  tutEvent('decide2');
 }
 ACT.play=async()=>{
   busy=true;setPanel('');
@@ -964,6 +1008,7 @@ function enterNQ(){
   busy=false;R.phase='nq';R.rec3=nqDecision(R.player);
   setMsg(hintMsg(R.rec3,'ディーラー不成立。ANTE を 1:1 で受け取るか、'+peso(R.A)+' 払ってディーラーの最高札を引き直させる（FORCE）か'));
   setPanel('<div class="btns" style="margin-top:auto">'+btn('take','ANTE 1:1',sgn(R.A),'green '+recBtn('take',R.rec3))+btn('force','FORCE',peso(R.A),'gold '+recBtn('force',R.rec3),P.balance<R.A)+'</div>');
+  tutEvent('nq');
 }
 ACT.take=async()=>{busy=true;setPanel('');logStrat('take',R.rec3,'不成立時');R.acts.push('ANTE 1:1');await settle('take');};
 ACT.force=async()=>{
@@ -1025,6 +1070,7 @@ async function finish(kind){
   setMsg(R.notes.length&&P.set.hint?'<span class="hint">'+R.notes.join(' / ')+'</span>':'');
   setPanel('<div class="btns" style="margin-top:auto">'+btn('newbet','ベットを変える')+btn('again','同じベットで配る',peso(need),'gold',P.balance<need)+'</div>');
   setBubble(net>0?'CONGRATULATIONS':'NEXT HAND');
+  tutEvent('done');
 }
 ACT.newbet=async()=>{busy=true;await clearTable();enterBetting(false);};
 ACT.again=async()=>{
@@ -1036,32 +1082,97 @@ ACT.again=async()=>{
   startHand();
 };
 
-// ---------- squeeze (ported from v2, scale-aware) ----------
+// ---------- squeeze ----------
+// styles: corner (any corner/edge), side (landscape card, long edge), end (short edge), scratch (rub off foil), slam (hold to charge, release)
+const SQ_STYLES=[['corner','コーナー','角や辺を指でめくる'],['side','サイド','横向きのカードを長い辺からめくる'],['end','エンド','短い辺から少しずつめくる'],['scratch','スクラッチ','指でこすって削る'],['slam','一気','長押しで溜めて、離して開く'],['random','おまかせ','毎回ちがう絞り方']];
+function sqStyleName(s){const f=SQ_STYLES.find(x=>x[0]===s);return f?f[1]:'コーナー';}
+function pickSqStyle(){let s=P.set.sqs||'corner';if(s==='random'){const a=['corner','side','end','scratch','slam'];s=a[Math.floor(Math.random()*a.length)];}return SQ_STYLES.some(x=>x[0]===s)?s:'corner';}
+
+// tension: heartbeat that speeds up + a low riser that follows the reveal progress
+function makeTension(){
+  let c=null,o=null,f=null,g=null,beat=null,p=0,alive=true;
+  if(P.set.sfx&&(c=actx())){try{o=c.createOscillator();f=c.createBiquadFilter();g=c.createGain();o.type='sawtooth';o.frequency.value=70;f.type='lowpass';f.frequency.value=300;g.gain.value=0;o.connect(f);f.connect(g);g.connect(c.destination);o.start();}catch(e){o=null;}}
+  (function thump(){if(!alive)return;if(p>.04){tone(58,.16,'sine',.16+p*.22);tone(46,.14,'sine',.1+p*.16,.13);buzz(10);}beat=setTimeout(thump,Math.max(320,950-p*650));})();
+  return{set(v){p=v;if(o){const t=c.currentTime;o.frequency.setTargetAtTime(70+v*260,t,.05);f.frequency.setTargetAtTime(300+v*1800,t,.05);g.gain.setTargetAtTime(v>.02?.01+v*.035:0,t,.05);}},
+    stop(){alive=false;clearTimeout(beat);if(o){const t=c.currentTime;g.gain.setTargetAtTime(0,t,.03);try{o.stop(t+.25);}catch(e){}}}};
+}
+
+// drama: what this card can make (shown before the last card), and what it made (after)
+const CAT={'High card':0,'Ace-King':0,'Pair':1,'Two pair':2,'Three of a kind':3,'Straight':4,'Flush':5,'Full house':6,'Four of a kind':7,'Straight flush':8,'Royal flush':9};
+const SUITSYM={s:'♠',h:'♥',d:'♦',c:'♣'};
+function partialHand(cards){
+  if(cards.length>=5){const h=evalHand(cards);return h.name==='Ace-King'?'High card':h.name;}
+  const n={};cards.forEach(c=>n[c.rank]=(n[c.rank]||0)+1);const v=Object.values(n).sort((a,b)=>b-a);
+  return v[0]===4?'Four of a kind':v[0]===3?(v[1]===2?'Full house':'Three of a kind'):v[0]===2?(v[1]===2?'Two pair':'Pair'):'High card';
+}
+function dramaPre(known,last){
+  if(!last)return '';
+  const parts=[];
+  if(known.length>=4){
+    const sc={};known.forEach(c=>sc[c.suit]=(sc[c.suit]||0)+1);
+    const fs=Object.keys(sc).find(s=>sc[s]>=4);if(fs&&CAT[partialHand(known)]<5)parts.push(SUITSYM[fs]+' でフラッシュ');
+    const st=[...straightFillCards(known)].sort((a,b)=>b-a);if(st.length&&CAT[partialHand(known)]<4)parts.push(st.map(v=>RNAME[v]).join('・')+' でストレート');
+  }
+  const cur=partialHand(known);
+  if(cur==='Three of a kind')parts.push('4枚目が来ればフォーカード');
+  return parts.length?'ラスト1枚 — '+parts.join(' ／ ')+'！':'ラスト1枚';
+}
+function dramaPost(known,c){
+  const before=CAT[partialHand(known)],after=CAT[partialHand([...known,c])];
+  return after>before&&after>=1?partialHand([...known,c]):null;
+}
+
 function squeeze(els){
   return new Promise(resolve=>{
-    const sq=$('sq');let idx=0,skipAll=false;
+    const sq=$('sq');let idx=0,skipAll=false;tutHide();
+    function done(){for(let k=idx;k<els.length;k++)flip(els[k],k>idx);sq.hidden=true;sq.innerHTML='';sq.classList.remove('flash');setTimeout(()=>{resolve();tutRender();},T(skipAll?350:0));}
     function next(){
-      if(idx>=els.length||skipAll){
-        for(let k=idx;k<els.length;k++)flip(els[k],k>idx);
-        sq.hidden=true;sq.innerHTML='';setTimeout(resolve,T(skipAll?350:0));return;
-      }
-      const el=els[idx];sq.innerHTML='';
-      const p=document.createElement('p');p.textContent=(els.length>1?(idx+1)+' / '+els.length+'　':'')+'角や辺を指でめくる・タップで開く';
-      const card=makeShiboriCard(el._c,()=>{setTimeout(()=>{el.classList.add('up');el.style.setProperty('--flip','0ms');idx++;next();},T(650));},180,252);
+      if(idx>=els.length||skipAll)return done();
+      const el=els[idx],c=el._c,style=pickSqStyle();
+      const all=[...playerRow.children],known=all.filter(e=>e!==el&&e.classList.contains('up')).map(e=>e._c);
+      const last=known.length===all.length-1;
+      sq.innerHTML='';
+      const head=document.createElement('p');head.textContent=(els.length>1?(idx+1)+' / '+els.length+'　':'')+sqStyleName(style)+' — '+SQ_STYLES.find(x=>x[0]===style)[2];
+      const pre=dramaPre(known,last),dr=document.createElement('p');dr.className='sqdrama';dr.textContent=pre;
+      const ten=makeTension();
+      const onProg=p=>{ten.set(p);};
+      const onReveal=()=>{
+        ten.stop();
+        const made=dramaPost(known,c);let wait2=650;
+        if(made){wait2=1300;const call=document.createElement('div');call.className='sqcall';call.textContent=JA[made]+'！';sq.appendChild(call);sq.classList.add('flash');
+          const k=CAT[made];[523,659,784,1047,1319].slice(0,2+Math.min(3,k)).forEach((f,i)=>tone(f,.22,'triangle',.11,i*.07));buzz([20,40,30]);}
+        else if(/でフラッシュ|でストレート|フォーカード/.test(pre)){wait2=1000;const call=document.createElement('div');call.className='sqcall miss';call.textContent='…惜しい';sq.appendChild(call);tone(392,.2,'sine',.08);tone(311,.35,'sine',.07,.16);}
+        setTimeout(()=>{el.classList.add('up');el.style.setProperty('--flip','0ms');idx++;next();},T(wait2));
+      };
+      const card=style==='scratch'?makeScratchCard(c,onReveal,180,252,onProg)
+        :style==='slam'?makeSlamCard(c,onReveal,180,252,onProg)
+        :style==='side'?makeShiboriCard(c,onReveal,252,180,{allow:['t','b'],landscape:true,onProgress:onProg})
+        :style==='end'?makeShiboriCard(c,onReveal,180,252,{allow:['t','b'],onProgress:onProg})
+        :makeShiboriCard(c,onReveal,180,252,{onProgress:onProg});
       const row=document.createElement('div');row.className='btns';row.style.gap='8px';
       const ob=document.createElement('button');ob.className='b';ob.textContent='開く';ob.onclick=()=>card._open();
       row.appendChild(ob);
       if(els.length-idx>1){const ab=document.createElement('button');ab.className='b';ab.textContent='残りを全部開く';ab.onclick=()=>{skipAll=true;card._open();};row.appendChild(ab);}
-      sq.append(p,card,row);sq.hidden=false;
+      sq.append(head,dr,card,row);sq.hidden=false;
     }
     next();
   });
 }
-function makeShiboriCard(c,onReveal,W,H){
-  const wrap=document.createElement('div');
-  wrap.style.cssText='width:'+W+'px;height:'+H+'px;flex:none;border-radius:12px;position:relative;overflow:hidden;touch-action:none;cursor:grab;box-shadow:0 10px 30px rgba(0,0,0,.6);';
-  const face=document.createElement('div');face.style.cssText='position:absolute;inset:0;';face.innerHTML=cardSVG(c);face.firstChild.style.cssText='width:100%;height:100%;display:block';
-  const mask=document.createElement('div');mask.style.cssText='position:absolute;inset:0;';mask.innerHTML=BACK;mask.firstChild.style.cssText='width:100%;height:100%;display:block';
+function cardBox(W,H){const w=document.createElement('div');w.className='sqcard';w.style.cssText='width:'+W+'px;height:'+H+'px;';return w;}
+// face/back layer; landscape draws the portrait card turned 90°
+function cardLayer(html,W,H,landscape){
+  const d=document.createElement('div');d.style.cssText='position:absolute;inset:0;';d.innerHTML=html;const s=d.firstChild;
+  if(landscape)s.style.cssText='position:absolute;width:'+H+'px;height:'+W+'px;left:'+((W-H)/2)+'px;top:'+((H-W)/2)+'px;transform:rotate(90deg);display:block';
+  else s.style.cssText='width:100%;height:100%;display:block';
+  return d;
+}
+function tremble(wrap,p){const a=p>.55?(p-.55)*4:0;wrap.style.transform=a?'translate('+((Math.random()-.5)*a).toFixed(2)+'px,'+((Math.random()-.5)*a).toFixed(2)+'px) scale('+(1+p*.03)+')':'scale('+(1+p*.03)+')';wrap.style.boxShadow='0 '+(10+p*14)+'px '+(30+p*20)+'px rgba(0,0,0,.6),0 0 '+(p*26)+'px rgba(231,200,121,'+(p*.5)+')';}
+function localPt(wrap,e){const r=wrap.getBoundingClientRect();return{x:(e.clientX-r.left)/scale,y:(e.clientY-r.top)/scale};}
+
+function makeShiboriCard(c,onReveal,W,H,opt){
+  opt=opt||{};
+  const wrap=cardBox(W,H);
+  const face=cardLayer(cardSVG(c),W,H,opt.landscape),mask=cardLayer(BACK,W,H,opt.landscape);
   const fold=document.createElement('div');fold.style.cssText='position:absolute;pointer-events:none;display:none;border-radius:3px;z-index:3;';
   wrap.append(face,mask,fold);
   let revealed=false,dragging=false,lastX=0,lastY=0,progress=0,corner=null,lastTick=0,springTimer=null;
@@ -1087,28 +1198,67 @@ function makeShiboriCard(c,onReveal,W,H){
   function setProgress(np){
     const prev=progress;progress=Math.max(0,Math.min(1,np));if(progress>=.8)progress=1;
     mask.style.clipPath=maskClip(progress);updateFold(progress);
+    if(!revealed){tremble(wrap,progress);opt.onProgress&&opt.onProgress(progress);}
     if(prev<.02&&progress>=.02){buzz(8);SFX.flip();}
     const tick=Math.floor(progress/.06);if(tick!==lastTick&&progress>.02&&progress<.8){lastTick=tick;buzz(3);tone(1200+progress*1400,.025,'square',.035);}
-    if(!revealed&&progress>=1){revealed=true;fold.style.display='none';mask.style.display='none';wrap.style.cursor='default';buzz([12,30,18]);noise(.08,.2,0,1800);tone(1800,.06,'sine',.07);onReveal&&onReveal();}
+    if(!revealed&&progress>=1){revealed=true;fold.style.display='none';mask.style.display='none';wrap.style.cursor='default';wrap.style.transform='scale(1.04)';buzz([12,30,18]);noise(.08,.2,0,1800);tone(1800,.06,'sine',.07);onReveal&&onReveal();}
   }
-  function springBack(){if(revealed||progress<=0||progress>=.8)return;clearInterval(springTimer);springTimer=setInterval(()=>{if(dragging||revealed){clearInterval(springTimer);return;}progress*=.82;if(progress<.015){progress=0;clearInterval(springTimer);}mask.style.clipPath=maskClip(progress);updateFold(progress);},16);}
-  function pt(e){const r=wrap.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:(t.clientX-r.left)/scale,y:(t.clientY-r.top)/scale};}
-  function detect(x,y){const fx=x/W,fy=y/H,L=fx<.33,Rt=fx>.67,Tp=fy<.33,B=fy>.67;if(Tp&&L)return 'tl';if(Tp&&Rt)return 'tr';if(B&&L)return 'bl';if(B&&Rt)return 'br';if(Tp)return 't';if(B)return 'b';if(L)return 'l';if(Rt)return 'r';return 'b';}
+  function springBack(){if(revealed||progress<=0||progress>=.8)return;clearInterval(springTimer);springTimer=setInterval(()=>{if(dragging||revealed){clearInterval(springTimer);return;}progress*=.82;if(progress<.015){progress=0;clearInterval(springTimer);}mask.style.clipPath=maskClip(progress);updateFold(progress);tremble(wrap,progress);opt.onProgress&&opt.onProgress(progress);},16);}
+  function detect(x,y){
+    if(opt.allow)return y<H/2?'t':'b';
+    const fx=x/W,fy=y/H,L=fx<.33,Rt=fx>.67,Tp=fy<.33,B=fy>.67;if(Tp&&L)return 'tl';if(Tp&&Rt)return 'tr';if(B&&L)return 'bl';if(B&&Rt)return 'br';if(Tp)return 't';if(B)return 'b';if(L)return 'l';if(Rt)return 'r';return 'b';}
   let downAt=0,downPt=null;
-  function onStart(e){if(revealed)return;e.preventDefault();dragging=true;const p=pt(e);lastX=p.x;lastY=p.y;downAt=Date.now();downPt=p;if(progress<=0)corner=detect(p.x,p.y);mask.style.clipPath=maskClip(progress);}
-  function onMove(e){if(revealed||!dragging)return;e.preventDefault();const p=pt(e),dx=p.x-lastX,dy=p.y-lastY;let inw;
+  wrap.addEventListener('pointerdown',e=>{if(revealed)return;e.preventDefault();try{wrap.setPointerCapture(e.pointerId);}catch(_){}dragging=true;const p=localPt(wrap,e);lastX=p.x;lastY=p.y;downAt=Date.now();downPt=p;if(progress<=0)corner=detect(p.x,p.y);mask.style.clipPath=maskClip(progress);});
+  wrap.addEventListener('pointermove',e=>{if(revealed||!dragging)return;e.preventDefault();const p=localPt(wrap,e),dx=p.x-lastX,dy=p.y-lastY;let inw;
     switch(corner){case 'tl':inw=(dx+dy)/2;break;case 'tr':inw=(-dx+dy)/2;break;case 'bl':inw=(dx-dy)/2;break;case 'br':inw=(-dx-dy)/2;break;case 't':inw=dy;break;case 'b':inw=-dy;break;case 'l':inw=dx;break;case 'r':inw=-dx;break;default:inw=-dy;}
-    setProgress(progress+Math.max(-MAX_STEP,Math.min(MAX_STEP,inw/(H*.65))));lastX=p.x;lastY=p.y;}
-  function onEnd(e){
+    setProgress(progress+Math.max(-MAX_STEP,Math.min(MAX_STEP,inw/(H*.65))));lastX=p.x;lastY=p.y;});
+  const end=e=>{
     if(!dragging)return;dragging=false;
-    if(!revealed&&downPt){const t=e.changedTouches?e.changedTouches[0]:e;const r=wrap.getBoundingClientRect();const p={x:(t.clientX-r.left)/scale,y:(t.clientY-r.top)/scale};
-      if(Math.hypot(p.x-downPt.x,p.y-downPt.y)<6&&Date.now()-downAt<300){corner=corner||'b';setProgress(1);return;}}
+    if(!revealed&&downPt){const p=localPt(wrap,e);if(Math.hypot(p.x-downPt.x,p.y-downPt.y)<6&&Date.now()-downAt<300){corner=corner||'b';setProgress(1);return;}}
     springBack();
-  }
-  wrap.addEventListener('mousedown',onStart);window.addEventListener('mousemove',onMove);window.addEventListener('mouseup',onEnd);
-  wrap.addEventListener('touchstart',onStart,{passive:false});wrap.addEventListener('touchmove',onMove,{passive:false});wrap.addEventListener('touchend',onEnd);
+  };
+  wrap.addEventListener('pointerup',end);wrap.addEventListener('pointercancel',end);
   wrap._open=()=>{if(!revealed){corner=corner||'b';setProgress(1);}};
   mask.style.clipPath='inset(0 0 0 0)';
+  return wrap;
+}
+function makeScratchCard(c,onReveal,W,H,onProgress){
+  const wrap=cardBox(W,H);wrap.append(cardLayer(cardSVG(c),W,H,false));
+  const cv=document.createElement('canvas');cv.width=W*2;cv.height=H*2;cv.style.cssText='position:absolute;inset:0;width:100%;height:100%;transition:opacity .35s;';wrap.appendChild(cv);
+  const g=cv.getContext('2d');g.scale(2,2);
+  const gr=g.createLinearGradient(0,0,W,H);gr.addColorStop(0,'#a9aab4');gr.addColorStop(.45,'#eef0f5');gr.addColorStop(.55,'#d7d9e0');gr.addColorStop(1,'#8f909c');g.fillStyle=gr;g.fillRect(0,0,W,H);
+  g.strokeStyle='rgba(255,255,255,.35)';for(let i=-H;i<W;i+=9){g.beginPath();g.moveTo(i,0);g.lineTo(i+H,H);g.stroke();}
+  g.fillStyle='#c99a3b';g.beginPath();g.arc(W/2,H/2-14,30,0,7);g.fill();g.fillStyle='#b4b5bf';g.beginPath();g.arc(W/2+10,H/2-22,27,0,7);g.fill();
+  g.fillStyle='rgba(90,15,31,.8)';g.font='700 14px Georgia,serif';g.textAlign='center';g.fillText('SCRATCH',W/2,H/2+50);
+  g.globalCompositeOperation='destination-out';g.lineCap='round';g.lineJoin='round';g.lineWidth=30;
+  let revealed=false,down=false,last=null,moves=0,lastSnd=0;
+  function cleared(){const d=g.getImageData(0,0,cv.width,cv.height).data;let n=0,t=0;for(let y=4;y<cv.height;y+=12)for(let x=4;x<cv.width;x+=12){t++;if(d[(y*cv.width+x)*4+3]<128)n++;}return n/t;}
+  function reveal(){if(revealed)return;revealed=true;cv.style.opacity='0';buzz([12,30,18]);noise(.08,.2,0,1800);tone(1800,.06,'sine',.07);onProgress(1);setTimeout(()=>{cv.remove();onReveal&&onReveal();},T(300));}
+  wrap.addEventListener('pointerdown',e=>{if(revealed)return;e.preventDefault();try{wrap.setPointerCapture(e.pointerId);}catch(_){}down=true;last=localPt(wrap,e);g.beginPath();g.arc(last.x,last.y,15,0,7);g.fill();});
+  wrap.addEventListener('pointermove',e=>{if(!down||revealed)return;e.preventDefault();const p=localPt(wrap,e);g.beginPath();g.moveTo(last.x,last.y);g.lineTo(p.x,p.y);g.stroke();last=p;
+    const now=performance.now();if(now-lastSnd>45){lastSnd=now;noise(.03,.09,0,2600+Math.random()*1500,'bandpass');buzz(2);}
+    if(++moves%5===0){const r=cleared(),pr=Math.min(1,r/.55);onProgress(pr);tremble(wrap,pr);if(r>=.55)reveal();}});
+  const up=()=>{down=false;};wrap.addEventListener('pointerup',up);wrap.addEventListener('pointercancel',up);
+  wrap._open=reveal;
+  return wrap;
+}
+function makeSlamCard(c,onReveal,W,H,onProgress){
+  const wrap=cardBox(W,H);wrap.style.overflow='visible';wrap.style.perspective='900px';wrap.style.background='none';
+  const inner=document.createElement('div');inner.style.cssText='position:absolute;inset:0;transform-style:preserve-3d;';
+  const back=cardLayer(BACK,W,H,false),front=cardLayer(cardSVG(c),W,H,false);
+  [back,front].forEach(x=>{x.style.backfaceVisibility='hidden';x.style.webkitBackfaceVisibility='hidden';x.style.borderRadius='12px';x.style.overflow='hidden';});
+  front.style.transform='rotateY(180deg)';inner.append(back,front);wrap.appendChild(inner);
+  let revealed=false,charging=false,t0=0,ch=0,raf=0;
+  function loop(){if(!charging)return;ch=Math.min(1,(performance.now()-t0)/1600);onProgress(ch);
+    const a=ch*5;inner.style.transform='translate('+((Math.random()-.5)*a).toFixed(1)+'px,'+((Math.random()-.5)*a).toFixed(1)+'px) rotate('+((Math.random()-.5)*ch*3).toFixed(2)+'deg) scale('+(1+ch*.06)+')';
+    wrap.style.boxShadow='0 0 '+(ch*46)+'px rgba(231,200,121,'+(ch*.8)+')';raf=requestAnimationFrame(loop);}
+  function slam(){if(revealed)return;revealed=true;charging=false;cancelAnimationFrame(raf);onProgress(1);
+    const big=ch>.3;const a=inner.animate([{transform:'rotateY(0) scale('+(1+ch*.06)+')'},{transform:'rotateY(90deg) scale('+(big?1.22:1.08)+') translateY(-14px)',offset:.45},{transform:'rotateY(180deg) scale(1)'}],{duration:T(big?460:320),easing:'cubic-bezier(.3,.6,.3,1)',fill:'forwards'});
+    a.finished.catch(()=>{}).then(()=>{inner.style.transform='rotateY(180deg)';wrap.style.boxShadow='0 10px 30px rgba(0,0,0,.6)';
+      noise(.14,big?.4:.2,0,700,'lowpass');tone(62,.32,'sine',big?.35:.18);buzz(big?[40,20,30]:[15]);if(big)$('sq').classList.add('flash');onReveal&&onReveal();});}
+  wrap.addEventListener('pointerdown',e=>{if(revealed)return;e.preventDefault();try{wrap.setPointerCapture(e.pointerId);}catch(_){}charging=true;t0=performance.now();loop();});
+  const up=()=>{if(charging)slam();};wrap.addEventListener('pointerup',up);wrap.addEventListener('pointercancel',up);
+  wrap._open=()=>{ch=Math.max(ch,0);slam();};
   return wrap;
 }
 
@@ -1124,7 +1274,7 @@ $('btnHint').onclick=()=>{
 };
 function renderSettings(){
   document.querySelectorAll('#sheetSet .seg[data-key]').forEach(seg=>{const k=seg.dataset.key;seg.querySelectorAll('button').forEach(b=>{b.classList.toggle('on',String(P.set[k])===b.dataset.v);});});
-  renderVoiceSel();
+  renderVoiceSel();$('sqStyle').value=P.set.sqs;renderSqPill();
   for(const k of Object.keys(P.jpt))$('jp-'+k).value=P.jpt[k];
   $('resetConfirm').hidden=true;
 }
@@ -1134,6 +1284,7 @@ document.querySelectorAll('#sheetSet .seg[data-key]').forEach(seg=>seg.addEventL
   if(k==='voice'&&!P.set.voice){try{speechSynthesis.cancel();}catch(e){}}
   if(!R&&k==='tmin')renderBetPanel();
 }));
+$('sqStyle').addEventListener('change',e=>{P.set.sqs=e.target.value;save();renderSqPill();});
 $('voiceSel').addEventListener('change',e=>{P.set.vname=e.target.value;save();say('Place your bets, please.',true);});
 $('voiceTry').onclick=()=>say('Dealer has a pair of kings. Player wins.',true);
 try{loadVoices();speechSynthesis.addEventListener('voiceschanged',loadVoices);}catch(e){}
@@ -1165,10 +1316,118 @@ function drawSpark(){
   g.font='11px "Share Tech Mono",monospace';g.textAlign='right';g.fillText(sgn(last),W-pad,12);
 }
 
+// ---------- squeeze picker (pill above the player's cards) ----------
+function renderSqPill(){$('sqpill').textContent='絞り：'+(P.set.sqz?sqStyleName(P.set.sqs):'OFF')+' ▾';}
+function renderSqMenu(){
+  const cur=P.set.sqz?P.set.sqs:'off';
+  $('sqmenu').innerHTML=[['off','OFF','表向きで配る（絞らない）'],...SQ_STYLES].map(([k,n,d])=>'<button data-sq="'+k+'" class="'+(k===cur?'on':'')+'"><b>'+n+'</b><small>'+d+'</small></button>').join('');
+}
+$('sqpill').onclick=e=>{e.stopPropagation();const m=$('sqmenu');if(m.hidden){renderSqMenu();m.hidden=false;}else m.hidden=true;};
+$('sqmenu').addEventListener('click',e=>{
+  const b=e.target.closest('[data-sq]');if(!b)return;const k=b.dataset.sq;
+  if(k==='off')P.set.sqz=0;else{P.set.sqz=1;P.set.sqs=k;}
+  save();renderSqPill();$('sqmenu').hidden=true;renderSettings();
+  if(R&&R.phase==='peek'&&!P.set.sqz&&!busy)ACT.openall();
+});
+document.addEventListener('pointerdown',e=>{const m=$('sqmenu');if(!m.hidden&&!e.target.closest('#sqmenu,#sqpill'))m.hidden=true;});
+
+// ---------- tutorial ----------
+// Scripted hands on practice chips. While TUT is set, save() only persists settings, so the real
+// balance/history in localStorage are never touched; leaving reloads the page from storage.
+const TUT_BET={on:'bet',text:'ANTE と SUPER に ₱500 ずつ置いて <b>DEAL</b>。',allow:['ante','super','deal']};
+const TUT_PEEK={on:'peek',text:'カードをタップして絞るか、「全部めくる」で開きます。',allow:['peek','sqseq','openall']};
+const TUT_LESSONS=[
+ {title:'基本の流れ',deck:'As Kd Kc Qh 5s Ah Kh 8d 4s 3c',steps:[
+  {on:'bet',text:'ルナポーカーは、ディーラーと5枚のポーカーで勝負するゲームです。まず <b>ANTE</b>（参加料）にチップを置きます。ANTE の丸をタップ。',allow:['ante'],focus:'#spot-ante',done:()=>bet.ante>=500},
+  {on:'bet',text:'次は <b>SUPER</b>。最初に配られる5枚の役だけで配当が決まるサイドベットで、ANTE と同額以上が必須です。SUPER の丸をタップ。',allow:['super'],focus:'#spot-super',done:()=>bet.super>=bet.ante&&bet.ante>0},
+  {on:'bet',text:'準備完了。<b>DEAL</b> で配ります。',allow:['deal'],focus:'[data-act=deal]'},
+  {on:'peek',text:'あなたの5枚は伏せて配られます。カードをタップすると<b>絞り</b>（指で少しずつめくる）。「全部めくる」で一気に開いてもOK。めくり方は左の「絞り」ボタンで選べます。',allow:['peek','sqseq','openall']},
+  {on:'decide',text:()=>'K のワンペアに A・K・Q がそろいました。<b>SUPER</b> は A・K・Q で '+P.set.akq+':1。もう配当が付いています。',next:true},
+  {on:'decide',text:'ここからが本勝負。<b>FOLD</b>＝降りる（ANTE 没収）／<b>BUY 6TH</b>＝ANTE と同額で6枚目を買う／<b>EXCHANGE</b>＝同額で2〜5枚交換／<b>PLAY</b>＝ANTE の2倍を BET に置いて勝負。',next:true},
+  {on:'decide',text:'ペアがあればそのまま勝負。<b>PLAY</b> をタップ。',allow:['play'],focus:'[data-act=play]'},
+  {on:'done',low:true,text:'ディーラーは <b>A・K 以上</b>で「成立」。今回は A・K で成立し、K のペアが上なのであなたの勝ち。勝つと ANTE は戻り（配当なし）、BET に役の配当が付きます。',next:true},
+  {on:'done',low:true,text:'さらに<b>ダブルペイ</b>：勝った手にもう一つ役があると両方払われます。今回はペア 1:1 ＋ A・K 1:1。',next:true}]},
+ {title:'BUY 6TH とダブルペイ',deck:'2h 7h 9h Jh 7c Ks Qs 9d 6c Qd Qh',steps:[
+  TUT_BET,TUT_PEEK,
+  {on:'decide',text:'7 のペアに ♥ が4枚。あと1枚 ♥ が来ればフラッシュです。',next:true},
+  {on:'decide',text:'こういう時は <b>BUY 6TH</b>（ANTE と同額）。6枚目を買い、6枚のうち一番強い5枚で勝負できます。',allow:['buy'],focus:'[data-act=buy]'},
+  {on:'decide2',text:'♥Q でフラッシュ完成！ しかも 7 のペアも残っています。<b>PLAY</b> で勝負。',allow:['play'],focus:'[data-act=play]'},
+  {on:'done',low:true,text:'フラッシュ 5:1 ＋ ペア 1:1 の<b>ダブルペイ</b>。6枚目を買う一番の狙いがこれです。BUY 代と外れた SUPER は没収なので、明細で差し引きを確かめましょう。',next:true}]},
+ {title:'EXCHANGE',deck:'Ah Kc 8d 5s 2c Js Jd 7h 3s 9c Ad 9h 4c',steps:[
+  TUT_BET,TUT_PEEK,
+  {on:'decide',text:'役はありませんが A と K があります。<b>A・K</b> はこのゲームでは役の一つ（1:1）。',next:true},
+  {on:'decide',text:'<b>EXCHANGE</b>（ANTE と同額）で、要らない札を2〜5枚交換できます。EXCHANGE をタップ。',allow:['exch'],focus:'[data-act=exch]'},
+  {on:'exsel',text:'A と K を残して、<b>8・5・2</b> の3枚をタップして選び、「交換する」。',allow:['exsel','exgo'],exgo:[2,3,4]},
+  {on:'decide2',text:'A が来てエースのペア！ <b>PLAY</b> で勝負。',allow:['play'],focus:'[data-act=play]'},
+  {on:'done',low:true,text:'エースのペア 1:1 ＋ A・K 1:1 のダブルペイ。ディーラーの J のペアに勝ちました。',next:true}]},
+ {title:'ディーラー不成立と FORCE',deck:'Jh Js 4d 4c Ad Qs 9h 7d 5c 2h 5d',steps:[
+  TUT_BET,TUT_PEEK,
+  {on:'decide',text:'ツーペア。迷わず <b>PLAY</b>。',allow:['play'],focus:'[data-act=play]'},
+  {on:'nq',text:'ディーラーは Q ハイで A・K に届かず<b>不成立</b>。この場合は ANTE が 1:1 で払われ、BET は戻ります。',next:true},
+  {on:'nq',text:'ここで <b>FORCE</b> も選べます。ANTE と同額を払うと、ディーラーの一番高い札（Q）を引き直させ、成立すれば通常の勝負。成立しなければ ANTE・BET とも返却です。試しに FORCE。',allow:['force'],focus:'[data-act=force]'},
+  {on:'done',low:true,text:'引き直しで 5 のペアになり成立 → ツーペアの勝ちで BET に 2:1。FORCE 代は戻りません。目安は、ストレート以上なら FORCE、スリーカード以下は ANTE 1:1。',next:true}]},
+];
+function tutStep(){return TUT&&TUT_LESSONS[TUT.lesson].steps[TUT.i];}
+function tutDeck(){
+  const want=TUT_LESSONS[TUT.lesson].deck.split(' ').map(t=>({rank:t.slice(0,-1),suit:t.slice(-1)}));
+  const key=c=>c.rank+c.suit,used=new Set(want.map(key));
+  return [...want,...newDeck().filter(c=>!used.has(key(c)))];
+}
+function tutAllows(act){
+  if(!TUT)return true;if(act==='pick')return true;
+  const s=tutStep();if(!s||s.on!==TUT.ev||s.next||!(s.allow||[]).includes(act))return false;
+  if(act==='exgo'&&s.exgo)return [...R.sel].sort((a,b)=>a-b).join()===s.exgo.join();
+  return true;
+}
+function tutNudge(){const c=$('coach');if(c.hidden)return;c.classList.remove('nudge');void c.offsetWidth;c.classList.add('nudge');buzz(20);}
+function tutEvent(ev){if(!TUT)return;
+  // jump to the first step for this event (action steps complete when the game moves on)
+  const st=TUT_LESSONS[TUT.lesson].steps;if(tutStep()&&tutStep().on!==ev){const j=st.findIndex((s,k)=>k>=TUT.i&&s.on===ev);if(j>=0)TUT.i=j;}
+  TUT.ev=ev;tutRender();}
+function tutHide(){$('coach').hidden=true;document.querySelectorAll('.tutfocus').forEach(e=>e.classList.remove('tutfocus'));}
+function tutRender(){
+  if(!TUT)return;tutHide();if(!$('sq').hidden)return;
+  const L=TUT_LESSONS[TUT.lesson];let s=tutStep();
+  while(s&&s.on===TUT.ev&&s.done&&s.done()){TUT.i++;s=tutStep();}
+  const c=$('coach');
+  let body,btns='<button class="b" data-tut="exit">終了</button>';
+  if(!s){
+    if(TUT.ev!=='done')return;
+    const lastL=TUT.lesson===TUT_LESSONS.length-1;
+    body=lastL?'チュートリアル完了！ 💡 ボタンで戦略ヒント、左下の「絞り」ボタンでめくり方（コーナー・サイド・スクラッチ・一気…）を選べます。':'レッスン '+(TUT.lesson+1)+' 完了！';
+    btns=lastL?'<button class="b gold" data-tut="exit">卓に戻る</button>':btns+'<button class="b gold" data-tut="nextlesson">次のレッスン</button>';
+  }else{
+    if(s.on!==TUT.ev)return;
+    body=typeof s.text==='function'?s.text():s.text;
+    if(s.next)btns+='<button class="b gold" data-tut="next">次へ</button>';
+    if(s.focus)document.querySelectorAll(s.focus).forEach(e=>e.classList.add('tutfocus'));
+  }
+  c.classList.toggle('low',!!(s?s.low:true));
+  c.innerHTML='<h6>TUTORIAL '+(TUT.lesson+1)+'/'+TUT_LESSONS.length+'　'+L.title+'</h6><div class="ct">'+body+'</div><div class="btns">'+btns+'</div>';
+  c.hidden=false;
+}
+$('coach').addEventListener('click',async e=>{
+  const b=e.target.closest('[data-tut]');if(!b||!TUT)return;const k=b.dataset.tut;
+  if(k==='next'){TUT.i++;tutRender();}
+  else if(k==='exit'){P.set.tut=1;save();location.reload();}
+  else if(k==='nextlesson'){if(busy)return;TUT.lesson++;TUT.i=0;TUT.ev=null;tutHide();busy=true;await clearTable();tutResetChips();enterBetting(false);}
+});
+function tutResetChips(){P.balance=45000;P.buyins=45000;P.last={ante:500,super:500,jp:0};chipSel=500;renderBal();}
+async function startTutorial(){
+  if(R&&R.phase!=='done'){setMsg('ハンドが終わってから始めてください');return;}
+  if(busy)return;
+  save();P.set.tut=1;save(); // flush real state before suppressing saves
+  TUT={lesson:0,i:0,ev:null};$('sheetSet').hidden=true;$('sqmenu').hidden=true;
+  if(bet.ante||bet.super||bet.jp){P.balance+=bet.ante+bet.super+(bet.jp?JP_BET:0);bet={ante:0,super:0,jp:0};}
+  busy=true;await clearTable();tutResetChips();$('jp').classList.remove('on');enterBetting(false);
+}
+$('btnTut').onclick=startTutorial;
+msgEl.addEventListener('click',e=>{if(e.target.closest('#tutGo'))startTutorial();});
+
 // ---------- boot ----------
-renderBal();renderMeter();setHintBtn();
+renderBal();renderMeter();setHintBtn();renderSqPill();
 enterBetting(false);
-if(P.hist.length===0)setMsg('ようこそ。チップを選んで <b>ANTE</b> と <b>SUPER</b> をタップ → <b>DEAL</b>（赤いランプは JP ₱100）');
+if(P.hist.length===0)setMsg('ようこそ。ANTE と SUPER にチップ → DEAL。'+(P.set.tut?'':'<button class="lnk" id="tutGo">はじめての方はチュートリアル</button>'));
 })();
 
 </script>

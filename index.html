@@ -1367,12 +1367,12 @@ const TUT_LESSONS=[
   {on:'exsel',text:'A と K を残して、<b>8・5・2</b> の3枚をタップして選び、「交換する」。',allow:['exsel','exgo'],exgo:[2,3,4]},
   {on:'decide2',text:'A が来てエースのペア！ <b>PLAY</b> で勝負。',allow:['play'],focus:'[data-act=play]'},
   {on:'done',low:true,text:'エースのペア 1:1 ＋ A・K 1:1 のダブルペイ。ディーラーの J のペアに勝ちました。',next:true}]},
- {title:'ディーラー不成立と FORCE',desc:'不成立のときの ANTE 1:1 と FORCE',deck:'Jh Js 4d 4c Ad Qs 9h 7d 5c 2h 5d',steps:[
+ {title:'ディーラー不成立と FORCE',desc:'強い手でディーラーが不成立のとき、FORCE で勝負に持ち込む',deck:'8h 8s 8d 3c 3h Qs 9h 7d 5c 2h 5d',steps:[
   TUT_BET,TUT_PEEK,
-  {on:'decide',text:'ツーペア。迷わず <b>PLAY</b>。',allow:['play'],focus:'[data-act=play]'},
-  {on:'nq',text:'ディーラーは Q ハイで A・K に届かず<b>不成立</b>。この場合は ANTE が 1:1 で払われ、BET は戻ります。',next:true},
-  {on:'nq',text:'ここで <b>FORCE</b> も選べます。ANTE と同額を払うと、ディーラーの一番高い札（Q）を引き直させ、成立すれば通常の勝負。成立しなければ ANTE・BET とも返却です。試しに FORCE。',allow:['force'],focus:'[data-act=force]'},
-  {on:'done',low:true,text:'引き直しで 5 のペアになり成立 → ツーペアの勝ちで BET に 2:1。FORCE 代は戻りません。目安は、ストレート以上なら FORCE、スリーカード以下は ANTE 1:1。',next:true}]},
+  {on:'decide',text:'フルハウス！ SUPER にも 100:1 が付きました。フルハウスは常に <b>PLAY</b>。',allow:['play'],focus:'[data-act=play]'},
+  {on:'nq',text:'ところがディーラーは Q ハイで A・K に届かず<b>不成立</b>。このままだと ANTE が 1:1 で払われ、BET は戻るだけ。フルハウスの配当 7:1 が消えてしまいます。',next:true},
+  {on:'nq',text:'そこで <b>FORCE</b>。ANTE と同額を払うと、ディーラーの一番高い札（Q）を引き直させ、成立すれば通常の勝負に。成立しなければ ANTE・BET とも返却です。FORCE をタップ。',allow:['force'],focus:'[data-act=force]'},
+  {on:'done',low:true,text:'引き直しで 5 のペアになり成立 → フルハウスの勝ちで BET に 7:1。FORCE 代は戻りません。目安は、ストレート以上なら FORCE、スリーカード以下は ANTE 1:1。',next:true}]},
 ];
 function tutStep(){return TUT&&TUT_LESSONS[TUT.lesson].steps[TUT.i];}
 function tutDeck(){

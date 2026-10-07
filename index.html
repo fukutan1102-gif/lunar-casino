@@ -249,7 +249,7 @@ canvas#spark{width:100%;height:90px;background:#12291f;border-radius:8px;display
         <div class="opt"><span>ディーラーの声<em>英語でコール（端末の読み上げ音声）</em></span><div class="seg" data-key="voice"><button data-v="1">ON</button><button data-v="0">OFF</button></div></div>
         <div class="opt"><span>声の種類<em>端末に入っている英語音声から選ぶ</em></span><span style="display:flex;gap:6px;flex:none"><select id="voiceSel"></select><button id="voiceTry" class="b" style="flex:none;width:56px;height:30px">試聴</button></span></div>
         <div class="opt"><span>フロアの環境音</span><div class="seg" data-key="amb"><button data-v="1">ON</button><button data-v="0">OFF</button></div></div>
-        <div class="opt"><span>進行速度</span><div class="seg" data-key="speed"><button data-v="1">標準</button><button data-v="1.8">速い</button></div></div>
+        <div class="opt"><span>進行速度</span><div class="seg" data-key="speed"><button data-v="1">標準</button><button data-v="1.8">速い</button><button data-v="3">超速</button><button data-v="5">最速</button></div></div>
       </div>
       <div><h5>卓のルール</h5>
         <div class="opt"><span>SUPER の A·K·Q 配当<em>マニラ卓は 6:1、WoO 一般表は 5:1</em></span><div class="seg" data-key="akq"><button data-v="6">6:1</button><button data-v="5">5:1</button></div></div>
@@ -803,7 +803,7 @@ ACT.deal=()=>{
 async function clearTable(){
   const els=[...dealerRow.children,...playerRow.children];
   $('result').hidden=true;$('dealerName').textContent='';$('playerName').textContent='';
-  if(els.length){const d=pos($('discard'));SFX.deal();await Promise.all(els.map((e,i)=>new Promise(r=>setTimeout(()=>animateTo(e,d,true).then(r),i*25))));}
+  if(els.length){const d=pos($('discard'));SFX.deal();await Promise.all(els.map((e,i)=>new Promise(r=>setTimeout(()=>animateTo(e,d,true).then(r),T(i*25)))));}
   dealerRow.innerHTML='';playerRow.innerHTML='';
 }
 async function startHand(){

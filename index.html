@@ -318,7 +318,7 @@ canvas#spark{width:100%;height:90px;background:#12291f;border-radius:8px;display
       <div><h5>卓のルール</h5>
         <div class="opt"><span>SUPER の A·K·Q 配当<em>マニラ卓は 6:1、WoO 一般表は 5:1</em></span><div class="seg" data-key="akq"><button data-v="6">6:1</button><button data-v="5">5:1</button></div></div>
         <div class="opt"><span>テーブルミニマム（ANTE）</span><div class="seg" data-key="tmin"><button data-v="100">₱100</button><button data-v="500">₱500</button><button data-v="1000">₱1,000</button></div></div>
-        <p class="note">SUPER は ANTE 以上が必須です。ストレートフラッシュ以上の SUPER は表に無いため、フラッシュ（60:1）として払っています。</p>
+        <p class="note">SUPER は必須ですが、額は ANTE と関係なく自由です。ストレートフラッシュ以上の SUPER は表に無いため、フラッシュ（60:1）として払っています。</p>
       </div>
       <div><h5>ジャックポット配当（₱100 ベット）</h5>
         <div class="opt"><span>ロイヤルフラッシュ<em>メーターの %</em></span><input id="jp-rf" inputmode="decimal"></div>
@@ -821,7 +821,7 @@ function renderBetPanel(){
   setPanel(tray+'<div class="btns">'+btn('clear','CLEAR','', '',empty&&!bet.jp)+(empty?btn('rebet','REBET',peso(lastTotal),'',P.balance+(bet.jp?JP_BET:0)<lastTotal):btn('double','×2','','',P.balance<bet.ante+bet.super))+btn('deal','DEAL',peso(bet.ante+bet.super+(bet.jp?JP_BET:0)),'gold',!bet.ante)+'</div>');
   const min=+P.set.tmin;
   if(P.balance<min*2&&empty)setMsg('チップが足りません。設定からチップを買い足せます');
-  else setMsg('チップを選んで <b>ANTE</b> と <b>SUPER</b> をタップ（ミニマム '+peso(min)+'・SUPER は ANTE 以上）');
+  else setMsg('チップを選んで <b>ANTE</b> と <b>SUPER</b> をタップ（ミニマム '+peso(min)+'・SUPER は好きな額で）');
   tutEvent('bet');
 }
 ACT.pick=b=>{chipSel=+b.dataset.v;SFX.chip();renderBetPanel();};
@@ -865,7 +865,7 @@ ACT.double=()=>{
 ACT.deal=()=>{
   const min=TUT?500:+P.set.tmin;
   if(bet.ante<min){setMsg('ANTE はミニマム '+peso(min)+' 以上が必要です');buzz(30);return;}
-  if(bet.super<bet.ante){setMsg('SUPER は ANTE（'+peso(bet.ante)+'）以上が必要です');buzz(30);return;}
+  if(!bet.super){setMsg('SUPER にもチップを置いてください（額は自由）');buzz(30);return;}
   startHand();
 };
 
@@ -890,12 +890,12 @@ async function startHand(){
   rowPad(dealerRow,5,56);rowPad(playerRow,5,54);
   let last5=null;
   for(let i=0;i<5;i++){
-    const up=!P.set.sqz&&!(i===4&&P.set.hot&&superReach(R.player.slice(0,4)));
+    const up=!P.set.sqz&&!(i===4&&P.set.hot&&!TUT&&superReach(R.player.slice(0,4)));
     const el=await dealCard(playerRow,R.player[i],54,76,up);await wait(60);if(i===4&&!P.set.sqz&&!up)last5=el;
     await dealCard(dealerRow,R.dealer[i],56,78,i===4);await wait(60);
   }
   setBubble('DEALER SHOWS '+cs(R.dealer[4]));
-  if(last5){await superReachShow(R.player.slice(0,4));await hotReveal(last5,'SUPER REACH');}
+  if(last5){R.phase='peek';await squeeze([last5]);} // squeeze OFF, but a SUPER reach is squeezed anyway
   if(P.set.sqz){await premonition();enterPeek();}else{await wait(350);R.phase='reveal';afterPeek();}
 }
 function enterPeek(){
@@ -912,7 +912,7 @@ function enterPeek(){
 ACT.sqseq=async()=>{busy=true;setPanel('');const els=[...playerRow.children].filter(e=>!e.classList.contains('up'));els.forEach(e=>{e.onclick=null;e.classList.remove('tap');});await squeeze(els);busy=false;checkPeek();};
 ACT.openall=async()=>{busy=true;setPanel('');const els=[...playerRow.children].filter(e=>!e.classList.contains('up'));els.forEach(e=>{e.onclick=null;e.classList.remove('tap');});
   const lastEl=els[els.length-1];for(const e of els.slice(0,-1)){flip(e);await wait(110);}await wait(300);
-  if(lastEl){const known=[...playerRow.children].filter(e=>e!==lastEl).map(e=>e._c);if(await superReachShow(known))await hotReveal(lastEl,'SUPER REACH');else{flip(lastEl);await wait(300);}}
+  if(lastEl){const known=[...playerRow.children].filter(e=>e!==lastEl).map(e=>e._c);if(P.set.hot&&!TUT&&superReach(known))await squeeze([lastEl]);else{flip(lastEl);await wait(300);}}
   busy=false;checkPeek();};
 function checkPeek(){if(R.phase!=='peek')return;if([...playerRow.children].every(e=>e.classList.contains('up'))){R.phase='reveal';afterPeek();}}
 
@@ -981,7 +981,7 @@ ACT.buy=async()=>{
   if(P.set.hot){const rr=raiseReach(R.player);await cutin('6TH CARD',rr?rr.tier:'blue',rr?JA[rr.name]+(rr.tier==='blue'?' 狙い':' リーチ')+' ・ 残り'+rr.outs+'枚':'');}
   const c=R.deck.shift();R.player.push(c);rowPad(playerRow,6,54);await wait(200);
   const el=await dealCard(playerRow,c,54,76,false);
-  if(P.set.sqz)await squeeze([el]);else await hotReveal(el,'SIXTH CARD');
+  if(P.set.sqz||P.set.hot)await squeeze([el]);else{flip(el);await wait(300);} // the 6th card is always a hot moment
   enterDecide2();
 };
 ACT.exch=()=>{
@@ -1452,7 +1452,7 @@ const TUT_PEEK={on:'peek',text:'カードをタップして絞るか、「全部
 const TUT_LESSONS=[
  {title:'基本の流れ',desc:'ANTE と SUPER、PLAY、ディーラーの成立、ダブルペイ',deck:'As Kd Kc Qh 5s Ah Kh 8d 4s 3c',steps:[
   {on:'bet',text:'ルナポーカーは、ディーラーと5枚のポーカーで勝負するゲームです。まず <b>ANTE</b>（参加料）にチップを置きます。ANTE の丸をタップ。',allow:['ante'],focus:'#spot-ante',done:()=>bet.ante>=500},
-  {on:'bet',text:'次は <b>SUPER</b>。最初に配られる5枚の役だけで配当が決まるサイドベットで、ANTE と同額以上が必須です。SUPER の丸をタップ。',allow:['super'],focus:'#spot-super',done:()=>bet.super>=bet.ante&&bet.ante>0},
+  {on:'bet',text:'次は <b>SUPER</b>。最初に配られる5枚の役だけで配当が決まるサイドベットです（額は自由）。SUPER の丸をタップ。',allow:['super'],focus:'#spot-super',done:()=>bet.super>0&&bet.ante>0},
   {on:'bet',text:'準備完了。<b>DEAL</b> で配ります。',allow:['deal'],focus:'[data-act=deal]'},
   {on:'peek',text:'あなたの5枚は伏せて配られます。カードをタップすると<b>絞り</b>（指で少しずつめくる）。「全部めくる」で一気に開いてもOK。めくり方は左の「絞り」ボタンで選べます。',allow:['peek','sqseq','openall']},
   {on:'decide',text:()=>'K のワンペアに A・K・Q がそろいました。<b>SUPER</b> は A・K・Q で '+P.set.akq+':1。もう配当が付いています。',next:true},

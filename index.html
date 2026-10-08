@@ -207,6 +207,28 @@ canvas#spark{width:100%;height:90px;background:#12291f;border-radius:8px;display
 #tutpick [data-lesson] b{font-size:14px;color:var(--ivory);} #tutpick [data-lesson] small{font-size:11px;color:#9fb9ad;}
 #tutpick .on{box-shadow:inset 0 0 0 1px var(--gold);}
 #tutpick p{margin:2px 0;font-size:11px;color:#9fb9ad;} #tutpick .b{flex:none;height:36px;}
+/* hot moments */
+.cutin{position:absolute;left:0;right:0;top:320px;height:96px;z-index:27;display:flex;align-items:center;justify-content:center;pointer-events:none;overflow:hidden;animation:cutbg 1.25s ease-in-out both;}
+.cutin span{font-family:var(--f-body);font-weight:700;font-size:40px;letter-spacing:.12em;color:#fff;animation:cutx 1.25s cubic-bezier(.2,.9,.2,1) both;white-space:nowrap;}
+.cutin.blue{background:linear-gradient(90deg,transparent,rgba(40,110,220,.85) 20%,rgba(40,110,220,.85) 80%,transparent);}
+.cutin.blue span{text-shadow:0 0 12px #8fb7ff,0 2px 3px #000;}
+.cutin.red{background:linear-gradient(90deg,transparent,rgba(200,20,30,.9) 15%,rgba(200,20,30,.9) 85%,transparent);}
+.cutin.red span{font-size:46px;text-shadow:0 0 16px #ff8a7a,0 2px 3px #000;}
+.cutin.gold{background:linear-gradient(90deg,transparent,rgba(201,154,59,.95) 10%,#f7e2a1 50%,rgba(201,154,59,.95) 90%,transparent);}
+.cutin.gold span{font-size:50px;color:#3a1d00;text-shadow:0 0 14px #fff,0 0 2px #fff;}
+@keyframes cutbg{0%{transform:scaleY(0)}12%{transform:scaleY(1)}85%{transform:scaleY(1);opacity:1}100%{transform:scaleY(.2);opacity:0}}
+@keyframes cutx{0%{transform:translateX(320px) skewX(-15deg)}18%{transform:translateX(0) skewX(-8deg)}80%{transform:translateX(-14px) skewX(-8deg)}100%{transform:translateX(-360px) skewX(-15deg)}}
+.card.omen-blue .cb{box-shadow:0 0 0 2px #6fa2ff,0 0 14px #3c7cff;}
+.card.omen-red .cb{box-shadow:0 0 0 2px #ff5a4f,0 0 16px #e0201c;animation:omenp .8s ease-in-out infinite;}
+.card.omen-gold .cb{box-shadow:0 0 0 2px #f7e2a1,0 0 20px #e7c879;animation:omenp .6s ease-in-out infinite;}
+.card.omen-gold .cb svg{filter:sepia(1) saturate(3) hue-rotate(5deg) brightness(1.15);}
+@keyframes omenp{50%{filter:brightness(1.35)}}
+.card.hot{z-index:5;transition:none;}
+.card.hot .cb{box-shadow:0 0 0 2px var(--gold),0 0 22px rgba(231,200,121,.9);}
+@media (prefers-reduced-motion:reduce){.cutin,.cutin span,.card.omen-red .cb,.card.omen-gold .cb{animation:none;}}
+.cutin span small{display:block;font-size:15px;letter-spacing:.04em;text-align:center;margin-top:2px;}
+.cutin.gold span small{color:#3a1d00;}
+#sq .sqdrama.blue{color:#cfe0ff;text-shadow:0 0 10px #3c7cff;} #sq .sqdrama.red{color:#ffd4cf;text-shadow:0 0 10px #e0201c;} #sq .sqdrama.gold{color:#fff3c4;text-shadow:0 0 12px #e7c879;}
 
 </style>
 </head>
@@ -286,6 +308,7 @@ canvas#spark{width:100%;height:90px;background:#12291f;border-radius:8px;display
       <div><h5>演出</h5>
         <div class="opt"><span>絞り<em>OFF なら自分の札を表向きで配る</em></span><div class="seg" data-key="sqz"><button data-v="1">ON</button><button data-v="0">OFF</button></div></div>
         <div class="opt"><span>絞り方</span><select id="sqStyle"><option value="corner">コーナー</option><option value="side">サイド</option><option value="end">エンド</option><option value="scratch">スクラッチ</option><option value="slam">一気</option><option value="random">おまかせ</option></select></div>
+        <div class="opt"><span>熱い演出<em>予告（チャンス／激アツ／超激アツ）・ディーラーの最後の1枚・大当たりの紙吹雪</em></span><div class="seg" data-key="hot"><button data-v="1">ON</button><button data-v="0">OFF</button></div></div>
         <div class="opt"><span>効果音</span><div class="seg" data-key="sfx"><button data-v="1">ON</button><button data-v="0">OFF</button></div></div>
         <div class="opt"><span>ディーラーの声<em>英語でコール（端末の読み上げ音声）</em></span><div class="seg" data-key="voice"><button data-v="1">ON</button><button data-v="0">OFF</button></div></div>
         <div class="opt"><span>声の種類<em>端末に入っている英語音声から選ぶ</em></span><span style="display:flex;gap:6px;flex:none"><select id="voiceSel"></select><button id="voiceTry" class="b" style="flex:none;width:56px;height:30px">試聴</button></span></div>
@@ -605,7 +628,7 @@ const cs=c=>c.rank+({s:'♠',h:'♥',d:'♦',c:'♣'})[c.suit];
 // ---------- persistence ----------
 const KEY='lunar_casino_v1';
 const DEF={balance:45000,buyins:45000,onTable:0,meter:2486350,
-  set:{sqz:1,sqs:'corner',sfx:1,voice:1,vname:'',amb:1,speed:1,akq:6,tmin:500,hint:0,tut:0},
+  set:{sqz:1,sqs:'corner',hot:1,sfx:1,voice:1,vname:'',amb:1,speed:1,akq:6,tmin:500,hint:0,tut:0},
   jpt:{rf:100,sf:10,quads:60000,fh:15000,flush:6000,straight:4000},
   last:{ante:500,super:500,jp:1},hist:[],series:[0],st:{hands:0,best:0,ok:0,n:0,jp:0}};
 let P,TUT=null; // TUT: tutorial state (see tutorial section)
@@ -865,12 +888,15 @@ async function startHand(){
   setBubble('NO MORE BETS');say('No more bets.');setMsg('');
   await clearTable();
   rowPad(dealerRow,5,56);rowPad(playerRow,5,54);
+  let last5=null;
   for(let i=0;i<5;i++){
-    await dealCard(playerRow,R.player[i],54,76,!P.set.sqz);await wait(60);
+    const up=!P.set.sqz&&!(i===4&&P.set.hot&&superReach(R.player.slice(0,4)));
+    const el=await dealCard(playerRow,R.player[i],54,76,up);await wait(60);if(i===4&&!P.set.sqz&&!up)last5=el;
     await dealCard(dealerRow,R.dealer[i],56,78,i===4);await wait(60);
   }
   setBubble('DEALER SHOWS '+cs(R.dealer[4]));
-  if(P.set.sqz)enterPeek();else{await wait(350);R.phase='reveal';afterPeek();}
+  if(last5){await superReachShow(R.player.slice(0,4));await hotReveal(last5,'SUPER REACH');}
+  if(P.set.sqz){await premonition();enterPeek();}else{await wait(350);R.phase='reveal';afterPeek();}
 }
 function enterPeek(){
   busy=false;R.phase='peek';
@@ -884,7 +910,10 @@ function enterPeek(){
   tutEvent('peek');
 }
 ACT.sqseq=async()=>{busy=true;setPanel('');const els=[...playerRow.children].filter(e=>!e.classList.contains('up'));els.forEach(e=>{e.onclick=null;e.classList.remove('tap');});await squeeze(els);busy=false;checkPeek();};
-ACT.openall=async()=>{busy=true;setPanel('');const els=[...playerRow.children].filter(e=>!e.classList.contains('up'));for(const e of els){e.onclick=null;e.classList.remove('tap');flip(e);await wait(110);}await wait(300);busy=false;checkPeek();};
+ACT.openall=async()=>{busy=true;setPanel('');const els=[...playerRow.children].filter(e=>!e.classList.contains('up'));els.forEach(e=>{e.onclick=null;e.classList.remove('tap');});
+  const lastEl=els[els.length-1];for(const e of els.slice(0,-1)){flip(e);await wait(110);}await wait(300);
+  if(lastEl){const known=[...playerRow.children].filter(e=>e!==lastEl).map(e=>e._c);if(await superReachShow(known))await hotReveal(lastEl,'SUPER REACH');else{flip(lastEl);await wait(300);}}
+  busy=false;checkPeek();};
 function checkPeek(){if(R.phase!=='peek')return;if([...playerRow.children].every(e=>e.classList.contains('up'))){R.phase='reveal';afterPeek();}}
 
 async function afterPeek(){
@@ -895,7 +924,8 @@ async function afterPeek(){
   const sp=superPayCheck(p,+P.set.akq);
   if(sp){
     const w=R.S*sp.mult;setBubble('SUPER '+sp.name.toUpperCase()+' · '+sp.mult+' TO 1');say('Super, '+sp.name+'. '+sp.mult+' to 1.');
-    SFX.sup();await fly(BANK,stackPt('super'),w);setSpot('super',R.S+w,true);floatText(stackPt('super'),'+'+peso(w));
+    SFX.sup();if(sp.mult>=30){confetti(sp.mult>=100?120:70,sp.mult>=100);await showBig('SUPER '+JA[sp.name],sp.mult+':1 +'+peso(w));}
+    await fly(BANK,stackPt('super'),w);setSpot('super',R.S+w,true);floatText(stackPt('super'),'+'+peso(w));
     addLine('SUPER '+JA[sp.name]+' '+sp.mult+':1',w);await wait(700);
   }else{await fly(stackPt('super'),BANK,R.S);setSpot('super',0);R.onTable-=R.S;addLine('SUPER',-R.S);}
   // JACKPOT
@@ -905,7 +935,7 @@ async function afterPeek(){
     if(j){
       SFX.jack();buzz([40,60,40,60,80]);P.st.jp++;
       if(j.name==='Royal flush')P.meter=JP_SEED;else if(j.pct)P.meter=Math.max(JP_SEED,P.meter-j.amount);
-      renderMeter();await showBig('JACKPOT',JA[j.name]+' '+peso(j.amount));say('Jackpot!');
+      renderMeter();confetti(160,true);await showBig('JACKPOT',JA[j.name]+' '+peso(j.amount));say('Jackpot!');
       P.balance+=j.amount;await fly(BANK,balPt(),j.amount);renderBal(true);addLine('JACKPOT '+JA[j.name],j.amount);
     }
   }
@@ -948,9 +978,10 @@ ACT.fold=async()=>{
 ACT.buy=async()=>{
   busy=true;setPanel('');logStrat('buy',R.rec1,'最初の判断');R.acts.push('BUY 6TH');
   setBubble('BUY SIXTH CARD');await payFee('BUY 6TH');
+  if(P.set.hot){const rr=raiseReach(R.player);await cutin('6TH CARD',rr?rr.tier:'blue',rr?JA[rr.name]+(rr.tier==='blue'?' 狙い':' リーチ')+' ・ 残り'+rr.outs+'枚':'');}
   const c=R.deck.shift();R.player.push(c);rowPad(playerRow,6,54);await wait(200);
   const el=await dealCard(playerRow,c,54,76,false);
-  if(P.set.sqz)await squeeze([el]);else{flip(el);await wait(300);}
+  if(P.set.sqz)await squeeze([el]);else await hotReveal(el,'SIXTH CARD');
   enterDecide2();
 };
 ACT.exch=()=>{
@@ -999,7 +1030,9 @@ ACT.play=async()=>{
 };
 async function dealerOpens(){
   setBubble('DEALER OPENS');setMsg('');
-  for(const el of [...dealerRow.children].slice(0,4)){flip(el);await wait(260);}
+  const dEls=[...dealerRow.children];
+  for(const el of dEls.slice(0,3)){flip(el);await wait(260);}
+  if(P.set.hot&&lastCardMatters(3))await hotReveal(dEls[3]);else{flip(dEls[3]);await wait(260);}
   await wait(250);
   const dh=evalHand(R.dealer);$('dealerName').textContent='ディーラー：'+handLabel(dh);
   if(!qualifies(R.dealer)){
@@ -1021,10 +1054,12 @@ ACT.take=async()=>{busy=true;setPanel('');logStrat('take',R.rec3,'不成立時')
 ACT.force=async()=>{
   busy=true;setPanel('');logStrat('force',R.rec3,'不成立時');R.acts.push('FORCE');
   setBubble('FORCE THE DEALER');say('Force the dealer.');await payFee('FORCE');
+  if(P.set.hot){const hi=R.dealer[forceIndex(R.dealer)];await cutin('FORCE','red','ディーラーの '+cs(hi)+' を引き直し');}
   const i=forceIndex(R.dealer),els=[...dealerRow.children];els.forEach(e=>e.classList.remove('dim'));
   const old=els[i];const op=pos(old);const h=document.createElement('div');h.style.cssText='width:56px;height:78px;flex:none';dealerRow.insertBefore(h,old);
   old.style.position='absolute';old.style.left=(op.x-28)+'px';old.style.top='0';await animateTo(old,pos($('discard')),true);
-  const c=R.deck.shift();R.dealer[i]=c;await dealCard(dealerRow,c,56,78,true,h);h.remove();
+  const c=R.deck.shift();R.dealer[i]=c;const nel=await dealCard(dealerRow,c,56,78,false,h);h.remove();
+  await hotReveal(nel,'REDRAW');
   await wait(400);
   const dh=evalHand(R.dealer);$('dealerName').textContent='ディーラー：'+handLabel(dh);
   if(qualifies(R.dealer)){setBubble('DEALER HAS '+(EN_CALL_UI[dh.name]||dh.name).toUpperCase());say('Dealer qualifies.');await wait(500);await settle('showdown');}
@@ -1043,6 +1078,7 @@ async function settle(path){
     setBubble('PLAYER WINS'+(s.second?' · DOUBLE PAYOUT':''));if(s.second)say('Double payout!');
   }else if(path==='showdown'&&s.cmp<0)setBubble('DEALER WINS');else if(path==='showdown')setBubble('PUSH');
   await doSpot('ante',R.A,s.ante);await doSpot('bet',R.raise,s.bet);
+  if(s.bet.res==='win'&&s.bet.win>=R.raise*5){confetti(s.bet.win>=R.raise*20?160:90,s.bet.win>=R.raise*20);}
   if(s.bet.res==='win'&&s.bet.win>=R.raise*5)await showBig(s.second?'DOUBLE PAYOUT':'BIG WIN','+'+peso(s.bet.win));
   const net=R.lines.reduce((a,l)=>a+l[1],0);
   await finish(net>0?'win':net<0?'lose':'push');
@@ -1133,22 +1169,24 @@ function squeeze(els){
   return new Promise(resolve=>{
     const sq=$('sq');let idx=0,skipAll=false;tutHide();
     function done(){for(let k=idx;k<els.length;k++)flip(els[k],k>idx);sq.hidden=true;sq.innerHTML='';sq.classList.remove('flash');setTimeout(()=>{resolve();tutRender();},T(skipAll?350:0));}
-    function next(){
+    async function next(){
       if(idx>=els.length||skipAll)return done();
       const el=els[idx],c=el._c,style=pickSqStyle();
       const all=[...playerRow.children],known=all.filter(e=>e!==el&&e.classList.contains('up')).map(e=>e._c);
       const last=known.length===all.length-1;
       sq.innerHTML='';
+      let sr=null;if(last&&R.phase==='peek'&&all.length===5){sq.hidden=true;sr=await superReachShow(known);}
       const head=document.createElement('p');head.textContent=(els.length>1?(idx+1)+' / '+els.length+'　':'')+sqStyleName(style)+' — '+SQ_STYLES.find(x=>x[0]===style)[2];
-      const pre=dramaPre(known,last),dr=document.createElement('p');dr.className='sqdrama';dr.textContent=pre;
+      const pre=sr?'SUPER '+JA[sr.name]+' リーチ！ '+sr.mult+'倍 — 残り'+sr.outs+'枚':dramaPre(known,last),dr=document.createElement('p');dr.className='sqdrama'+(sr?' '+sr.tier:'');dr.textContent=pre;
       const ten=makeTension();
       const onProg=p=>{ten.set(p);};
       const onReveal=()=>{
         ten.stop();
-        const made=dramaPost(known,c);let wait2=650;
+        let made=dramaPost(known,c);let wait2=650;
+        if(sr){const sp=superPayCheck([...known,c],+P.set.akq);if(sp&&sp.mult>=8)made=sp.name==='Five picture cards'?'Five picture cards':made||sp.name;}
         if(made){wait2=1300;const call=document.createElement('div');call.className='sqcall';call.textContent=JA[made]+'！';sq.appendChild(call);sq.classList.add('flash');
-          const k=CAT[made];[523,659,784,1047,1319].slice(0,2+Math.min(3,k)).forEach((f,i)=>tone(f,.22,'triangle',.11,i*.07));buzz([20,40,30]);}
-        else if(/でフラッシュ|でストレート|フォーカード/.test(pre)){wait2=1000;const call=document.createElement('div');call.className='sqcall miss';call.textContent='…惜しい';sq.appendChild(call);tone(392,.2,'sine',.08);tone(311,.35,'sine',.07,.16);}
+          const k=CAT[made]===undefined?5:CAT[made];[523,659,784,1047,1319].slice(0,2+Math.min(3,k)).forEach((f,i)=>tone(f,.22,'triangle',.11,i*.07));buzz([20,40,30]);}
+        else if(sr||/でフラッシュ|でストレート|フォーカード/.test(pre)){wait2=1000;const call=document.createElement('div');call.className='sqcall miss';call.textContent='…惜しい';sq.appendChild(call);tone(392,.2,'sine',.08);tone(311,.35,'sine',.07,.16);}
         setTimeout(()=>{el.classList.add('up');el.style.setProperty('--flip','0ms');idx++;next();},T(wait2));
       };
       const card=style==='scratch'?makeScratchCard(c,onReveal,180,252,onProg)
@@ -1321,6 +1359,74 @@ function drawSpark(){
   g.lineTo(X(s.length-1),Y(0));g.lineTo(X(0),Y(0));g.closePath();g.fillStyle=last>=0?'rgba(123,224,166,.12)':'rgba(255,138,122,.12)';g.fill();
   g.fillStyle=col;g.beginPath();g.arc(X(s.length-1),Y(last),3,0,7);g.fill();
   g.font='11px "Share Tech Mono",monospace';g.textAlign='right';g.fillText(sgn(last),W-pad,12);
+}
+
+// ---------- hot moments (display only; never changes outcomes) ----------
+function confetti(n,gold){
+  if(!P.set.hot||reduced)return;
+  const cv=document.createElement('canvas');cv.width=780;cv.height=1640;cv.style.cssText='position:absolute;inset:0;width:390px;height:820px;pointer-events:none;';$('fx').appendChild(cv);
+  const g=cv.getContext('2d');g.scale(2,2);const cols=gold?['#f7e2a1','#e7c879','#c99a3b','#fff3c4']:['#e7c879','#7be0a6','#ff8a7a','#8fb7ff','#f8f3e6'];
+  const ps=Array.from({length:n},()=>({x:195+(Math.random()-.5)*120,y:300+(Math.random()-.5)*60,vx:(Math.random()-.5)*9,vy:-6-Math.random()*8,r:Math.random()*6.3,vr:(Math.random()-.5)*.4,w:5+Math.random()*5,h:3+Math.random()*4,c:cols[Math.floor(Math.random()*cols.length)]}));
+  const t0=performance.now(),dur=T(2200);
+  (function step(t){const k=(t-t0)/dur;g.clearRect(0,0,390,820);
+    for(const p of ps){p.vy+=.28;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;g.save();g.globalAlpha=Math.max(0,1-k*k);g.translate(p.x,p.y);g.rotate(p.r);g.fillStyle=p.c;g.fillRect(-p.w/2,-p.h/2,p.w,p.h);g.restore();}
+    if(k<1)requestAnimationFrame(step);else cv.remove();})(t0);
+}
+// cut-in strip: tier 'blue' | 'red' | 'gold'
+async function cutin(text,tier,sub){
+  const e=document.createElement('div');e.className='cutin '+tier;e.innerHTML='<span>'+text+(sub?'<small>'+sub+'</small>':'')+'</span>';$('stage').appendChild(e);
+  if(tier==='gold'){[523,659,784,1047,1319,1568].forEach((f,i)=>tone(f,.25,'square',.06,i*.06));buzz([30,30,30,30,60]);confetti(70,true);}
+  else if(tier==='red'){[392,523,659,784].forEach((f,i)=>tone(f,.2,'sawtooth',.05,i*.07));buzz([25,25,40]);}
+  else{tone(659,.16,'triangle',.08);tone(880,.2,'triangle',.08,.1);buzz(20);}
+  await wait(1250);e.remove();
+}
+// reach: what the next card can make. Only cards the player can see are excluded from the outs.
+function visibleCards(){return [...[...playerRow.children].filter(e=>e.classList.contains('up')).map(e=>e._c),...R.dealer.filter((c,i)=>dealerRow.children[i]&&dealerRow.children[i].classList.contains('up'))];}
+function eachUnseen(fn){const seen=new Set(visibleCards().map(c=>c.rank+c.suit));for(const s of SUITS)for(const r of RANKS)if(!seen.has(r+s))fn({rank:r,suit:s});}
+// SUPER reach on the first five: next card can pay trips (8) or better, beyond what is already locked in
+function superReach(known){
+  let mx=0,mn=1e9,name='',outs=0;
+  eachUnseen(c=>{const sp=superPayCheck([...known,c],+P.set.akq),m=sp?sp.mult:0;if(m>mx){mx=m;name=sp.name;outs=0;}if(m===mx&&m>0)outs++;if(m<mn)mn=m;});
+  return mx>=8&&mx>mn?{name,mult:mx,outs,tier:mx>=100?'gold':mx>=30?'red':'blue'}:null;
+}
+// raise-hand reach for the 6th card
+function raiseReach(cards){
+  const cur=CAT[partialHand(cards)];let best=cur,name=null,outs=0;
+  eachUnseen(c=>{const h=partialHand([...cards,c]),k=CAT[h];if(k>best){best=k;name=h;outs=0;}if(name&&k===best)outs++;});
+  return name?{name,outs,tier:best>=6?'gold':best>=3?'red':'blue'}:null;
+}
+async function superReachShow(known){
+  if(!P.set.hot)return null;const sr=superReach(known);if(!sr)return null;
+  setBubble('SUPER REACH');await cutin('リーチ！',sr.tier,'SUPER '+JA[sr.name]+' '+sr.mult+'倍 ・ 残り'+sr.outs+'枚');return sr;
+}
+// premonition after the deal: stronger first-five hands show it more often and in hotter colours
+const OMEN_P=[.04,.10,.25,.5,.8,.95],OMEN_COL=[[.85,.15,0],[.85,.15,0],[.5,.45,.05],[.2,.6,.2],[0,.4,.6],[0,.2,.8]];
+async function premonition(){
+  if(!P.set.hot||!P.set.sqz||TUT)return;
+  const h=eval5(R.player),tier=h.rank>=6?5:h.rank>=4?4:h.rank>=3?3:h.rank>=2?2:h.rank>=1?1:0;
+  if(Math.random()>=OMEN_P[tier])return;
+  const w=OMEN_COL[tier],r=Math.random(),col=r<w[0]?'blue':r<w[0]+w[1]?'red':'gold';
+  const els=[...playerRow.children],n=col==='gold'?els.length:col==='red'?2:1;
+  els.slice().sort(()=>Math.random()-.5).slice(0,n).forEach(e=>e.classList.add('omen-'+col));
+  await cutin({blue:'チャンス',red:'激アツ',gold:'超激アツ'}[col],col);
+}
+// slow, shaking reveal for a card that decides the hand
+async function hotReveal(el,label){
+  if(!P.set.hot||reduced){flip(el);await wait(300);return;}
+  setBubble(label||'LAST CARD');const ten=makeTension();el.classList.add('hot');
+  const t0=performance.now(),dur=T(1500);
+  await new Promise(res=>{(function step(t){const k=Math.min(1,(t-t0)/dur);ten.set(k);const a=k*3;
+    el.style.transform='translate('+((Math.random()-.5)*a).toFixed(1)+'px,'+(-8*k+(Math.random()-.5)*a).toFixed(1)+'px) scale('+(1+k*.18)+')';
+    if(k<1)requestAnimationFrame(step);else res();})(t0);});
+  ten.stop();flip(el);noise(.12,.3,0,700,'lowpass');tone(62,.3,'sine',.25);buzz([30,20,30]);
+  await wait(420);el.style.transform='';el.classList.remove('hot');
+}
+// is the dealer's last hidden card a real coin flip for the player? (~1 in 10 played hands:
+// pair or better with a 20-60% loss chance, or a flush-or-better at any real risk)
+function lastCardMatters(i){
+  const seen=new Set([...R.player,...R.dealer].map(c=>c.rank+c.suit)),ph=evalHand(R.player);let n=0,l=0;
+  for(const s of SUITS)for(const r of RANKS){if(seen.has(r+s))continue;const d=R.dealer.slice();d[i]={rank:r,suit:s};n++;if(qualifies(d)&&cmpHands(ph,evalHand(d))<0)l++;}
+  const pl=l/n;return ph.rank>=1&&((pl>=.2&&pl<=.6)||(ph.rank>=5&&pl>=.08));
 }
 
 // ---------- squeeze picker (pill above the player's cards) ----------

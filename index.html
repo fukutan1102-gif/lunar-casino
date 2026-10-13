@@ -771,6 +771,24 @@ async function dealCard(row,c,w,h,faceUp,beforeEl){
   return el;
 }
 
+// deal a 5-card packet the way a shuffler-fed stud table does: the stack slides out of the shoe
+// to the first slot, then spreads into the row
+async function dealPacket(row,cards,w,h){
+  const els=cards.map(c=>{const el=makeCard(c,w,h);row.appendChild(el);return el;});
+  SFX.deal();
+  if(reduced)return els;
+  const shoe=shoePt(),first=pos(els[0]);
+  await Promise.all(els.map((el,i)=>{const p=pos(el);
+    const a=el.animate([
+      {transform:'translate('+(shoe.x-p.x)+'px,'+(shoe.y-p.y-i*.6)+'px) rotate(-35deg) scale(.6)',opacity:.9},
+      {transform:'translate('+(first.x-p.x)+'px,'+(-i*.6)+'px) rotate(0deg)',opacity:1,offset:.5},
+      {transform:'translate('+(first.x-p.x)+'px,'+(-i*.6)+'px)',offset:.62},
+      {transform:'none'}],{duration:T(820),delay:T(i*18),easing:'cubic-bezier(.25,.8,.3,1)'});
+    return a.finished.catch(()=>{});}));
+  for(let i=0;i<5;i++)noise(.03,.08,i*.035,2400+i*300,'bandpass'); // spread
+  return els;
+}
+
 // ---------- chips ----------
 function chipEl(v,d){const e=document.createElement('div');e.className='chip';e.dataset.v=v;e.style.setProperty('--c',DCOL[v]);e.style.setProperty('--d',(d||34)+'px');e.innerHTML='<i>'+DLBL[v]+'</i>';return e;}
 function breakdown(a){const out=[];for(let i=DENOMS.length-1;i>=0;i--){while(a>=DENOMS[i]&&out.length<40){out.push(DENOMS[i]);a-=DENOMS[i];}}return out;}
@@ -913,11 +931,13 @@ async function startHand(){
   setBubble('NO MORE BETS');say('No more bets.');setMsg('');
   await clearTable();
   rowPad(dealerRow,5,56);rowPad(playerRow,5,54);
+  const pEls=await dealPacket(playerRow,R.player,54,76);await wait(120);
+  const dEls=await dealPacket(dealerRow,R.dealer,56,78);await wait(150);
+  flip(dEls[4]);
   let last5=null;
-  for(let i=0;i<5;i++){
-    const up=!P.set.sqz&&!(i===4&&P.set.hot&&!TUT&&superReach(R.player.slice(0,4)));
-    const el=await dealCard(playerRow,R.player[i],54,76,up);await wait(60);if(i===4&&!P.set.sqz&&!up)last5=el;
-    await dealCard(dealerRow,R.dealer[i],56,78,i===4);await wait(60);
+  if(!P.set.sqz){ // face up, except a SUPER reach keeps its last card down for the squeeze
+    const hold=P.set.hot&&!TUT&&superReach(R.player.slice(0,4));
+    for(let i=0;i<5;i++){if(i===4&&hold){last5=pEls[4];continue;}flip(pEls[i],i>0);await wait(70);}
   }
   setBubble('DEALER SHOWS '+cs(R.dealer[4]));
   if(last5){R.phase='peek';await squeeze([last5]);} // squeeze OFF, but a SUPER reach is squeezed anyway

@@ -1444,11 +1444,13 @@ async function superReachShow(known){
   if(!P.set.hot)return null;const sr=superReach(known);if(!sr)return null;
   setBubble('SUPER REACH');await cutin('リーチ！',sr.tier,'SUPER '+JA[sr.name]+' '+sr.mult+'倍 ・ 残り'+sr.outs+'枚');return sr;
 }
-// premonition after the deal: stronger first-five hands show it more often and in hotter colours
-const OMEN_P=[.04,.10,.25,.5,.8,.95],OMEN_COL=[[.85,.15,0],[.85,.15,0],[.5,.45,.05],[.2,.6,.2],[0,.4,.6],[0,.2,.8]];
+// premonition after the deal: only for a genuinely hot first five (straight or better, never a bluff);
+// stronger hands show it more often and in hotter colours. Index = tier (straight/flush / FH+).
+const OMEN_P=[.8,.95],OMEN_COL=[[0,.4,.6],[0,.2,.8]];
 async function premonition(){
   if(!P.set.hot||!P.set.sqz||TUT)return;
-  const h=eval5(R.player),tier=h.rank>=6?5:h.rank>=4?4:h.rank>=3?3:h.rank>=2?2:h.rank>=1?1:0;
+  const h=eval5(R.player);if(h.rank<4)return;
+  const tier=h.rank>=6?1:0;
   if(Math.random()>=OMEN_P[tier])return;
   const w=OMEN_COL[tier],r=Math.random(),col=r<w[0]?'blue':r<w[0]+w[1]?'red':'gold';
   const els=[...playerRow.children],n=col==='gold'?els.length:col==='red'?2:1;

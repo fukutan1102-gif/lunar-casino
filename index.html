@@ -375,13 +375,13 @@ const PIPS={'2':[['C','t',0],['C','z',1]],'3':[['C','t',0],['C','m',0],['C','z',
   '9':[['L','t',0],['R','t',0],['L','a',0],['R','a',0],['C','m',0],['L','b',1],['R','b',1],['L','z',1],['R','z',1]],
   '10':[['L','t',0],['R','t',0],['C',46.4,0],['L','a',0],['R','a',0],['L','b',1],['R','b',1],['C',93.6,1],['L','z',1],['R','z',1]]};
 function pip(s,x,y,sz,col,flip){return '<use href="#s-'+s+'" x="'+(x-sz/2)+'" y="'+(y-sz/2)+'" width="'+sz+'" height="'+sz+'" fill="'+col+'"'+(flip?' transform="rotate(180 '+x+' '+y+')"':'')+'/>';}
-// corner index: rank 4.6-15% and suit 18-25% of the height, centred at 9.4% of the width (tools/glyphs.py).
+// corner index: rank 4.6-15% and suit 18-27% of the height (about 9.5 and 8 mm on the card), as on the reference deck (tools/glyphs.py).
 // idx 'times' = the old Times index, kept only so the squeeze simulator can compare
 function cornerIndex(c,col,idx){
   let one;
   if(idx==='times'||typeof INDEX_GLYPHS==='undefined'){const ten=c.rank==='10';
     one='<text x="11" y="19.6" font-family="\'Times New Roman\',Times,\'Noto Serif\',Georgia,serif" font-size="'+(ten?16.5:18.5)+'" fill="'+col+'" text-anchor="middle"'+(ten?' letter-spacing="-1.8"':'')+'>'+c.rank+'</text>'+pip(c.suit,11,27.6,8.4,col);}
-  else{const k=.146;one='<path transform="translate('+(9.4-38*k).toFixed(3)+' 6.4) scale('+k+')" fill="'+col+'" fill-rule="evenodd" d="'+INDEX_GLYPHS[c.rank]+'"/>'+pip(c.suit,9.4,30.2,10.2,col);}
+  else{const k=.146;one='<path transform="translate('+(9.4-38*k).toFixed(3)+' 6.4) scale('+k+')" fill="'+col+'" fill-rule="evenodd" d="'+INDEX_GLYPHS[c.rank]+'"/>'+pip(c.suit,8.9,30.9,12.9,col);}
   return one+'<g transform="rotate(180 50 70)">'+one+'</g>';
 }
 function cardSVG(c,idx){

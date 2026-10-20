@@ -381,17 +381,18 @@ function cornerIndex(c,col,idx){
   let one;
   if(idx==='times'||typeof INDEX_GLYPHS==='undefined'){const ten=c.rank==='10';
     one='<text x="11" y="19.6" font-family="\'Times New Roman\',Times,\'Noto Serif\',Georgia,serif" font-size="'+(ten?16.5:18.5)+'" fill="'+col+'" text-anchor="middle"'+(ten?' letter-spacing="-1.8"':'')+'>'+c.rank+'</text>'+pip(c.suit,11,27.6,8.4,col);}
-  else{const k=.146;one='<path transform="translate('+(9.4-38*k).toFixed(3)+' 6.4) scale('+k+')" fill="'+col+'" fill-rule="evenodd" d="'+INDEX_GLYPHS[c.rank]+'"/>'+pip(c.suit,8.9,30.9,12.9,col);}
+  else{const k=.146;one='<path transform="translate('+(8.9-38*k).toFixed(3)+' 6.4) scale('+k+')" fill="'+col+'" fill-rule="evenodd" d="'+INDEX_GLYPHS[c.rank]+'"/>'+pip(c.suit,8.9,30.9,12.9,col);}
   return one+'<g transform="rotate(180 50 70)">'+one+'</g>';
 }
 function cardSVG(c,idx){
   const col=SUITCOL[c.suit],r=c.rank,frame='<rect x=".4" y=".4" width="99.2" height="139.2" rx="6" fill="#fff" stroke="#c9c6c0" stroke-width=".8"/>';
   const u=CARD_URL[r+c.suit];let g='';
-  // court frame at 14.5-85.5% x 10.3-89.7% like the reference deck; its top sits below where every rank has settled
-  if(u)g='<image href="'+u+'" x="1.96" y="2.21" width="96.1" height="135.6" preserveAspectRatio="none"/>';
+  // court frame at 15.1-84.9% x 10.3-89.7% like the reference deck (0.6 mm clear of the index); its top sits below
+  // where every rank has settled
+  if(u)g='<image href="'+u+'" x="2.77" y="2.21" width="94.48" height="135.6" preserveAspectRatio="none"/>';
   else if(r==='A')g=pip(c.suit,50,70,ACE,col);
   else if(PIPS[r]){for(const[px,py,f]of PIPS[r])g+=pip(c.suit,PC[px],typeof py==='number'?py:PR[py],PIP,col,f);}
-  else g='<rect x="14.5" y="14.4" width="71" height="111.2" rx="2" fill="none" stroke="'+col+'" stroke-width=".8"/><text x="50" y="82" font-family="\'Times New Roman\',Times,Georgia,serif" font-size="40" fill="'+col+'" text-anchor="middle">'+r+'</text>'; // no CARD_ART
+  else g='<rect x="15.1" y="14.4" width="69.8" height="111.2" rx="2" fill="none" stroke="'+col+'" stroke-width=".8"/><text x="50" y="82" font-family="\'Times New Roman\',Times,Georgia,serif" font-size="40" fill="'+col+'" text-anchor="middle">'+r+'</text>'; // no CARD_ART
   return '<svg viewBox="0 0 100 140">'+frame+g+cornerIndex(c,col,idx)+'</svg>';
 }
 // back: the printed deck's back (tools/print_deck.py back(), 180° symmetric) inside the app's rounded card edge
